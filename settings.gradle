@@ -1,0 +1,2 @@
+include ':app', ':clinglib'
+rootProject.name='clingLib'
