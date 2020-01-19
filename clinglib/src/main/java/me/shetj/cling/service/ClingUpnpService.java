@@ -10,11 +10,8 @@ import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.registry.Registry;
 
 /**
- * 说明：
- * 作者：zhouzhan
- * 日期：17/6/28 16:11
+ * 不可以转换成kotlin，  语法存在差异
  */
-
 public class ClingUpnpService extends AndroidUpnpServiceImpl {
     private LocalDevice mLocalDevice = null;
 

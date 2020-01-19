@@ -3,6 +3,7 @@ package me.shetj.cling.manager
 import android.content.Context
 import me.shetj.cling.entity.IControlPoint
 import me.shetj.cling.entity.IDevice
+import org.fourthline.cling.registry.RegistryListener
 
 interface IDLNAManager <T> {
     /**
@@ -53,7 +54,17 @@ interface IDLNAManager <T> {
     fun registerRenderingControl(context: Context?)
 
     /**
+     * 添加监听
+     */
+    fun addListener(registryListener: RegistryListener)
+
+    /**
+     * 移除监听
+     */
+    fun removeListener(registryListener: RegistryListener)
+    /**
      * 销毁
      */
     fun destroy()
+
 }

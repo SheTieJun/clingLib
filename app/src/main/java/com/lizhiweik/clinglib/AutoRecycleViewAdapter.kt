@@ -5,16 +5,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import me.shetj.cling.entity.ClingDevice
 
-
-/**
- * **@packageName：** com.shetj.diyalbume.playVideo<br></br>
- * **@author：** shetj<br></br>
- * **@createTime：** 2017/12/12<br></br>
- * **@company：**<br></br>
- * **@email：** 375105540@qq.com<br></br>
- * **@describe**<br></br>
- */
-
 class AutoRecycleViewAdapter(data: MutableList<ClingDevice>?) : BaseQuickAdapter<ClingDevice, BaseViewHolder>(R.layout.item_recycle_string, data) {
 
     private var playPosition = -1

@@ -1,7 +1,6 @@
 package me.shetj.cling.callback
 
-import me.shetj.cling.entity.IResponse
 
-interface ControlReceiveCallback<T> : ControlCallback<T> {
-    fun receive(response: IResponse<T>?)
+interface ControlReceiveCallback : ControlCallback {
+    fun receive(size: Long)
 }

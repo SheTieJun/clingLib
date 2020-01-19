@@ -2,11 +2,6 @@ package me.shetj.cling.util
 
 import java.util.*
 
-/**
- * 说明：
- * 作者：zhouzhan
- * 日期：17/6/29 10:47
- */
 object Utils {
     @JvmStatic
     fun isNull(obj: Any?): Boolean {

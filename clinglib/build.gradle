@@ -29,7 +29,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    // Cling library
+    // Cling library 只能使用2.1.1 ，当2.1.2时无法搜索到设备
     api 'org.fourthline.cling:cling-core:2.1.1'
     api 'org.fourthline.cling:cling-support:2.1.1'
     // Jetty library

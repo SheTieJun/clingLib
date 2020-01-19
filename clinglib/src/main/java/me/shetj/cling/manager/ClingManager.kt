@@ -5,8 +5,8 @@ import me.shetj.cling.entity.ClingControlPoint
 import me.shetj.cling.entity.ClingDevice
 import me.shetj.cling.entity.IControlPoint
 import me.shetj.cling.entity.IDevice
+import me.shetj.cling.isEmpty
 import me.shetj.cling.service.ClingUpnpService
-import me.shetj.cling.util.ListUtils.isEmpty
 import me.shetj.cling.util.Utils.isNull
 import org.fourthline.cling.model.meta.Device
 import org.fourthline.cling.model.types.DeviceType
@@ -14,6 +14,7 @@ import org.fourthline.cling.model.types.ServiceType
 import org.fourthline.cling.model.types.UDADeviceType
 import org.fourthline.cling.model.types.UDAServiceType
 import org.fourthline.cling.registry.Registry
+import org.fourthline.cling.registry.RegistryListener
 import java.util.*
 
 class ClingManager private constructor() : IClingManager<Device<*, *, *>?> {
@@ -62,9 +63,9 @@ class ClingManager private constructor() : IClingManager<Device<*, *, *>?> {
     override var selectedDevice: IDevice<Device<*, *, *>?>?
         get() = if (isNull(mDeviceManager)) {
             null
-        } else mDeviceManager!!.selectedDevice
+        } else mDeviceManager!!.getSelectedDevice()
         set(device) {
-            mDeviceManager!!.selectedDevice = device
+            mDeviceManager!!.setSelectedDevice(device)
         }
 
     override fun cleanSelectedDevice() {
@@ -75,13 +76,17 @@ class ClingManager private constructor() : IClingManager<Device<*, *, *>?> {
     }
 
     override fun registerAVTransport(context: Context?) {
-        if (isNull(mDeviceManager)) return
-        mDeviceManager!!.registerAVTransport(context)
+        context?.let {
+            if (isNull(mDeviceManager)) return
+            mDeviceManager!!.registerAVTransport(context)
+        }
     }
 
     override fun registerRenderingControl(context: Context?) {
-        if (isNull(mDeviceManager)) return
-        mDeviceManager!!.registerRenderingControl(context)
+        context?.let {
+            if (isNull(mDeviceManager)) return
+            mDeviceManager!!.registerRenderingControl(context)
+        }
     }
 
     override fun setUpnpService(upnpService: ClingUpnpService?) {
@@ -90,6 +95,14 @@ class ClingManager private constructor() : IClingManager<Device<*, *, *>?> {
 
     override fun setDeviceManager(deviceManager:IDeviceManager<Device<*, *, *>?>?) {
         mDeviceManager = deviceManager
+    }
+
+    override fun addListener(registryListener: RegistryListener) {
+        registry.addListener(registryListener)
+    }
+
+    override fun removeListener(registryListener: RegistryListener) {
+        registry.removeListener(registryListener)
     }
 
 

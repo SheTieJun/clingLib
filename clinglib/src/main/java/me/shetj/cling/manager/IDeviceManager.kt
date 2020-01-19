@@ -7,10 +7,11 @@ interface IDeviceManager<T> {
     /**
      * 获取选中设备
      */
+    fun getSelectedDevice() :IDevice<T>?
     /**
      * 设置选中设备
      */
-    var selectedDevice: IDevice<T>?
+    fun setSelectedDevice(device: IDevice<T>?)
 
     /**
      * 取消选中设备
@@ -21,13 +22,13 @@ interface IDeviceManager<T> {
      * 监听投屏端 AVTransport 回调
      * @param context   用于接收到消息发广播
      */
-    fun registerAVTransport(context: Context?)
+    fun registerAVTransport(context: Context)
 
     /**
      * 监听投屏端 RenderingControl 回调
      * @param context   用于接收到消息发广播
      */
-    fun registerRenderingControl(context: Context?)
+    fun registerRenderingControl(context: Context)
 
     /**
      * 销毁

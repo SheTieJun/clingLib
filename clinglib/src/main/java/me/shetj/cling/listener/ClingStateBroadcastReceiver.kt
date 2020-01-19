@@ -3,10 +3,11 @@ package me.shetj.cling.listener
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Handler
 import me.shetj.cling.entity.Intents
 
-class ClingStateBroadcastReceiver(private val handler: Handler) : BroadcastReceiver() {
+class ClingStateBroadcastReceiver(private val handler: Handler,private val context: Context) : BroadcastReceiver() {
 
     companion object{
         /** 连接设备状态: 播放状态  */
@@ -23,6 +24,8 @@ class ClingStateBroadcastReceiver(private val handler: Handler) : BroadcastRecei
         val ERROR_ACTION = 0xa5
     }
 
+    private var registered = false
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             Intents.ACTION_PLAYING -> {
@@ -37,6 +40,23 @@ class ClingStateBroadcastReceiver(private val handler: Handler) : BroadcastRecei
             Intents.ACTION_TRANSITIONING -> {
                 handler.sendEmptyMessage(TRANSITIONING_ACTION)
             }
+        }
+    }
+
+    fun registerReceiver(){
+        if (!registered) {
+            val filter = IntentFilter()
+            filter.addAction(Intents.ACTION_PLAYING)
+            filter.addAction(Intents.ACTION_PAUSED_PLAYBACK)
+            filter.addAction(Intents.ACTION_STOPPED)
+            filter.addAction(Intents.ACTION_TRANSITIONING)
+            context.registerReceiver(this, filter)
+        }
+    }
+
+    fun unregisterReceiver(){
+        if (registered) {
+            context.unregisterReceiver(this)
         }
     }
 }

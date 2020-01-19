@@ -46,7 +46,7 @@ class BrowseRegistryListener : DefaultRegistryListener() {
         }
         if (isNotNull(mOnDeviceListChangedListener)) {
             val clingDevice = ClingDevice(device)
-            ClingDeviceList.getInstance().addDevice(clingDevice)
+            ClingDeviceList.addDevice(clingDevice)
             mOnDeviceListChangedListener!!.onDeviceAdded(clingDevice)
         }
     }
@@ -54,9 +54,9 @@ class BrowseRegistryListener : DefaultRegistryListener() {
     fun deviceRemoved(device: Device<*, *, *>?) {
         Log.e(TAG, "deviceRemoved")
         if (isNotNull(mOnDeviceListChangedListener)) {
-            val clingDevice = ClingDeviceList.getInstance().getClingDevice(device)
+            val clingDevice = ClingDeviceList.getClingDevice(device)
             if (clingDevice != null) {
-                ClingDeviceList.getInstance().removeDevice(clingDevice)
+                ClingDeviceList.removeDevice(clingDevice)
                 mOnDeviceListChangedListener!!.onDeviceRemoved(clingDevice)
             }
         }

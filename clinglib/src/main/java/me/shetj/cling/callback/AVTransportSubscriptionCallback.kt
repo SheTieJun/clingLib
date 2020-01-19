@@ -15,11 +15,6 @@ import org.fourthline.cling.support.avtransport.lastchange.AVTransportVariable.R
 import org.fourthline.cling.support.lastchange.LastChange
 import org.fourthline.cling.support.model.TransportState
 
-/**
- * 说明：
- * 作者：zhouzhan
- * 日期：15/7/17 AM11:33
- */
 class AVTransportSubscriptionCallback(service: Service<*, *>?, context: Context?) : BaseSubscriptionCallback(service, context) {
     override fun eventReceived(subscription: GENASubscription<*>) { // 这里进行 事件接收处理
         if (isNull(mContext)) return

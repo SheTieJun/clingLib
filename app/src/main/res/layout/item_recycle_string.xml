@@ -6,9 +6,12 @@
 
     <TextView
         android:id="@+id/tv_string"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
+        android:textSize="16sp"
+        android:paddingStart="25dp"
+        android:paddingEnd="25dp"
         />
 </FrameLayout>

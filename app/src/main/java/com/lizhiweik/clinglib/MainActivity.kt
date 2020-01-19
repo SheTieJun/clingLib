@@ -3,7 +3,6 @@ package com.lizhiweik.clinglib
 import android.content.*
 import android.os.Bundle
 import android.os.Handler
-import android.os.IBinder
 import android.os.Message
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,10 +11,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 import me.shetj.base.base.BaseActivity
 import me.shetj.base.base.BasePresenter
 import me.shetj.base.kt.showToast
+import me.shetj.cling.*
 import me.shetj.cling.callback.ControlCallback
 import me.shetj.cling.control.ClingPlayControl
 import me.shetj.cling.entity.*
-import me.shetj.cling.getAndRegisterClingStateBroadcastReceiver
 import me.shetj.cling.listener.BrowseRegistryListener
 import me.shetj.cling.listener.ClingStateBroadcastReceiver
 import me.shetj.cling.listener.ClingStateBroadcastReceiver.Companion.ERROR_ACTION
@@ -25,77 +24,40 @@ import me.shetj.cling.listener.ClingStateBroadcastReceiver.Companion.STOP_ACTION
 import me.shetj.cling.listener.ClingStateBroadcastReceiver.Companion.TRANSITIONING_ACTION
 import me.shetj.cling.listener.DeviceListChangedListener
 import me.shetj.cling.manager.ClingManager
-import me.shetj.cling.manager.DeviceManager
-import me.shetj.cling.playUrl
-import me.shetj.cling.refreshDeviceList
-import me.shetj.cling.service.ClingUpnpService
 import me.shetj.cling.util.Utils
 import timber.log.Timber
-import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 
 class MainActivity : BaseActivity<BasePresenter<*>>()   {
-    private lateinit var mTransportStateBroadcastReceiver: ClingStateBroadcastReceiver
     private lateinit var mAdapter: AutoRecycleViewAdapter
+    //播放、停止相关控制
     private val mClingPlayControl by lazy {
         ClingPlayControl()
     }
     private val mBrowseRegistryListener by lazy {
         BrowseRegistryListener()
     }
-
     private val mHandler: Handler = InnerHandler()
-
-    private val mUpnpServiceConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val binder: ClingUpnpService.LocalBinder = service as ClingUpnpService.LocalBinder
-            val beyondUpnpService: ClingUpnpService = binder.service
-            val clingUpnpServiceManager = ClingManager.instance
-            clingUpnpServiceManager.setUpnpService(beyondUpnpService)
-            clingUpnpServiceManager.setDeviceManager(DeviceManager())
-            clingUpnpServiceManager.registry.addListener(mBrowseRegistryListener)
-            //Search on service created.
-            clingUpnpServiceManager.searchDevices()
-        }
-
-        override fun onServiceDisconnected(className: ComponentName) {
-            ClingManager.instance.setUpnpService(null)
-        }
-    }
-
-    override fun initData() {
-
-    }
-
-    override fun initView() {
-
-    }
-
-    private fun registerReceivers() { //Register play status broadcast
-        mTransportStateBroadcastReceiver = getAndRegisterClingStateBroadcastReceiver(mHandler)
-    }
-
-
-    private fun bindServices() { // Bind UPnP service
-        val upnpServiceIntent = Intent(this, ClingUpnpService::class.java)
-        bindService(upnpServiceIntent, mUpnpServiceConnection, Context.BIND_AUTO_CREATE)
-    }
-
+    private var mUpnpServiceConnection: ServiceConnection? =null
+    private var mTransportStateBroadcastReceiver: ClingStateBroadcastReceiver ?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
+
+    override fun initView() {
         start_screen.setOnClickListener {
             val url = "https://vod.lycheer.net/e22cd48bvodtransgzp1253442168/d6b59e205285890789389180692/v.f20.mp4"
-            mClingPlayControl.playUrl(url, ClingPlayType.TYPE_VIDEO,object : ControlCallback<Any> {
-                override fun success(response: IResponse<Any>) {
+            mClingPlayControl.playUrl(url, ClingPlayType.TYPE_VIDEO,object : ControlCallback{
+
+                override fun success(response: Any) {
                     "投放成功".showToast()
-                    //                    ClingUpnpServiceManager.getInstance().subscribeMediaRender();
                     ClingManager.instance.registerAVTransport(this@MainActivity)
                     ClingManager.instance.registerRenderingControl(this@MainActivity)
                 }
 
-                override fun fail(response: IResponse<Any>) {
+                override fun fail(response: Exception) {
                     "投放失败".showToast()
                     mHandler.sendEmptyMessage(ERROR_ACTION)
                 }
@@ -104,12 +66,13 @@ class MainActivity : BaseActivity<BasePresenter<*>>()   {
         }
 
         stop_screen.setOnClickListener {
-            mClingPlayControl.stop(object :ControlCallback<Any>{
-                override fun success(response: IResponse<Any>) {
+            mClingPlayControl.stop(object :ControlCallback{
+
+                override fun success(response: Any) {
                     "停止成功".showToast()
                 }
 
-                override fun fail(response: IResponse<Any>) {
+                override fun fail(response: Exception) {
                     "停止失败".showToast()
                     mHandler.sendEmptyMessage( ERROR_ACTION)
                 }
@@ -130,16 +93,33 @@ class MainActivity : BaseActivity<BasePresenter<*>>()   {
                 }
             },2,TimeUnit.SECONDS)
         }
-
         showRecycleView()
+
+    }
+    override fun initData() {
 
         bindServices()
         registerReceivers()
+
     }
 
 
+    private fun bindServices() { // Bind UPnP service
+        mUpnpServiceConnection =   startBindService{
+            ClingManager.instance.addListener(mBrowseRegistryListener)
+            ClingManager.instance.searchDevices()
+        }
+    }
+
+
+    private fun registerReceivers() { //Register play status broadcast
+        mTransportStateBroadcastReceiver = getAndRegisterClingStateBroadcastReceiver(mHandler)
+    }
+
+
+
     private fun showRecycleView() {
-        mAdapter = AutoRecycleViewAdapter(ArrayList()).apply {
+        mAdapter = AutoRecycleViewAdapter(ClingDeviceList.getClingDeviceList().toMutableList()).apply {
             setOnItemClickListener { _, _, position ->
                 getItem(position)?.apply {
                     // 选择连接设备
@@ -180,11 +160,12 @@ class MainActivity : BaseActivity<BasePresenter<*>>()   {
     override fun onDestroy() {
         super.onDestroy()
         mHandler.removeCallbacksAndMessages(null)
-        unbindService(mUpnpServiceConnection)
-        unregisterReceiver(mTransportStateBroadcastReceiver)
-        ClingManager.instance.registry?.removeListener(mBrowseRegistryListener)
+        mUpnpServiceConnection?.let {
+            unbindService(it)
+        }
+        mTransportStateBroadcastReceiver?.unregisterReceiver()
+        ClingManager.instance.removeListener(mBrowseRegistryListener)
         ClingManager.instance.destroy()
-        ClingDeviceList.getInstance().destroy()
     }
 
     inner class InnerHandler : Handler() {

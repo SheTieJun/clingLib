@@ -22,6 +22,7 @@ import org.fourthline.cling.support.model.item.VideoItem;
 import org.fourthline.cling.support.renderingcontrol.callback.GetVolume;
 import org.fourthline.cling.support.renderingcontrol.callback.SetMute;
 import org.fourthline.cling.support.renderingcontrol.callback.SetVolume;
+import org.jetbrains.annotations.NotNull;
 import org.seamless.util.MimeType;
 
 import java.text.DateFormat;
@@ -32,10 +33,6 @@ import me.shetj.cling.callback.ControlCallback;
 import me.shetj.cling.callback.ControlReceiveCallback;
 import me.shetj.cling.entity.ClingPlayState;
 import me.shetj.cling.entity.ClingPlayType;
-import me.shetj.cling.entity.ClingPositionResponse;
-import me.shetj.cling.entity.ClingResponse;
-import me.shetj.cling.entity.ClingVolumeResponse;
-import me.shetj.cling.entity.IResponse;
 import me.shetj.cling.manager.ClingManager;
 import me.shetj.cling.util.ClingUtils;
 import me.shetj.cling.util.Utils;
@@ -61,25 +58,25 @@ public class ClingPlayControl implements IPlayControl {
 
         stop(new ControlCallback() { // 1、 停止当前播放视频
             @Override
-            public void success(IResponse response) {
+            public void success(Object response) {
 
-                setAVTransportURI(url,ItemType, new ControlCallback() {   // 2、设置 url
+                setAVTransportURI(url,ItemType, new ControlCallback() {
                     @Override
-                    public void success(IResponse response) {
-                        play(callback);                        // 3、播放视频
-                    }
-
-                    @Override
-                    public void fail(IResponse response) {
+                    public void fail(@NotNull Exception response) {
                         if (Utils.isNotNull(callback)) {
                             callback.fail(response);
                         }
+                    }
+
+                    @Override
+                    public void success(Object response) {
+                        play(callback);                        // 3、播放视频
                     }
                 });
             }
 
             @Override
-            public void fail(IResponse response) {
+            public void fail(@NotNull Exception response) {
                 if (Utils.isNotNull(callback)) {
                     callback.fail(response);
                 }
@@ -105,14 +102,14 @@ public class ClingPlayControl implements IPlayControl {
             public void success(ActionInvocation invocation) {
                 super.success(invocation);
                 if (Utils.isNotNull(callback)) {
-                    callback.success(new ClingResponse(invocation));
+                    callback.success(invocation);
                 }
             }
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                 if (Utils.isNotNull(callback)) {
-                    callback.fail(new ClingResponse(invocation, operation, defaultMsg));
+                    callback.fail(new Exception(defaultMsg));
                 }
             }
         });
@@ -136,14 +133,14 @@ public class ClingPlayControl implements IPlayControl {
             public void success(ActionInvocation invocation) {
                 super.success(invocation);
                 if (Utils.isNotNull(callback)) {
-                    callback.success(new ClingResponse(invocation));
+                    callback.success(invocation);
                 }
             }
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                 if (Utils.isNotNull(callback)) {
-                    callback.fail(new ClingResponse(invocation, operation, defaultMsg));
+                    callback.fail(new Exception(defaultMsg));
                 }
             }
         });
@@ -167,14 +164,14 @@ public class ClingPlayControl implements IPlayControl {
             public void success(ActionInvocation invocation) {
                 super.success(invocation);
                 if (Utils.isNotNull(callback)) {
-                    callback.success(new ClingResponse(invocation));
+                    callback.success(invocation);
                 }
             }
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                 if (Utils.isNotNull(callback)) {
-                    callback.fail(new ClingResponse(invocation, operation, defaultMsg));
+                    callback.fail(new Exception(defaultMsg));
                 }
             }
         });
@@ -200,14 +197,14 @@ public class ClingPlayControl implements IPlayControl {
             public void success(ActionInvocation invocation) {
                 super.success(invocation);
                 if (Utils.isNotNull(callback)) {
-                    callback.success(new ClingResponse(invocation));
+                    callback.success(invocation);
                 }
             }
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                 if (Utils.isNotNull(callback)) {
-                    callback.fail(new ClingResponse(invocation, operation, defaultMsg));
+                    callback.fail(new Exception(defaultMsg));
                 }
             }
         });
@@ -231,14 +228,14 @@ public class ClingPlayControl implements IPlayControl {
                 @Override
                 public void success(ActionInvocation invocation) {
                     if (Utils.isNotNull(callback)) {
-                        callback.success(new ClingResponse(invocation));
+                        callback.success(invocation);
                     }
                 }
 
                 @Override
                 public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                     if (Utils.isNotNull(callback)) {
-                        callback.fail(new ClingResponse(invocation, operation, defaultMsg));
+                        callback.fail(new Exception(defaultMsg));
                     }
                 }
             });
@@ -263,14 +260,14 @@ public class ClingPlayControl implements IPlayControl {
             @Override
             public void success(ActionInvocation invocation) {
                 if (Utils.isNotNull(callback)) {
-                    callback.success(new ClingResponse(invocation));
+                    callback.success(invocation);
                 }
             }
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                 if (Utils.isNotNull(callback)) {
-                    callback.fail(new ClingResponse(invocation, operation, defaultMsg));
+                    callback.fail(new Exception(defaultMsg));
                 }
             }
         });
@@ -305,14 +302,14 @@ public class ClingPlayControl implements IPlayControl {
             public void success(ActionInvocation invocation) {
                 super.success(invocation);
                 if (Utils.isNotNull(callback)) {
-                    callback.success(new ClingResponse(invocation));
+                    callback.success(invocation);
                 }
             }
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                 if (Utils.isNotNull(callback)) {
-                    callback.fail(new ClingResponse(invocation, operation, defaultMsg));
+                    callback.fail(new Exception(defaultMsg));
                 }
             }
         });
@@ -332,7 +329,7 @@ public class ClingPlayControl implements IPlayControl {
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                 if (Utils.isNotNull(callback)) {
-                    callback.fail(new ClingPositionResponse(invocation, operation, defaultMsg));
+                    callback.fail(new Exception(defaultMsg));
                 }
             }
 
@@ -340,14 +337,14 @@ public class ClingPlayControl implements IPlayControl {
             public void success(ActionInvocation invocation) {
                 super.success(invocation);
                 if (Utils.isNotNull(callback)) {
-                    callback.success(new ClingPositionResponse(invocation));
+                    callback.success(invocation);
                 }
             }
 
             @Override
             public void received(ActionInvocation invocation, PositionInfo info) {
                 if (Utils.isNotNull(callback)) {
-                    callback.receive(new ClingPositionResponse(invocation, info));
+                    callback.receive(info.getTrackElapsedSeconds());
                 }
             }
         };
@@ -370,14 +367,14 @@ public class ClingPlayControl implements IPlayControl {
             @Override
             public void received(ActionInvocation actionInvocation, int currentVolume) {
                 if (Utils.isNotNull(callback)) {
-                    callback.receive(new ClingVolumeResponse(actionInvocation, currentVolume));
+                    callback.receive(currentVolume);
                 }
             }
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
                 if (Utils.isNotNull(callback)) {
-                    callback.fail(new ClingVolumeResponse(invocation, operation, defaultMsg));
+                    callback.fail(new Exception(defaultMsg));
                 }
             }
         };
