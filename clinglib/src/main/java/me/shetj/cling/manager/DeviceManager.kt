@@ -1,6 +1,5 @@
 package me.shetj.cling.manager
 
-import android.content.Context
 import me.shetj.cling.control.SubscriptionControl
 import me.shetj.cling.entity.ClingDevice
 import me.shetj.cling.entity.ClingDeviceList.getClingDeviceList
@@ -19,18 +18,18 @@ internal class  DeviceManager  : IDeviceManager  {
         mSelectedDevice!!.isSelected = false
     }
 
-    override fun registerAVTransport(context: Context) {
+    override fun registerAVTransport() {
         if (isNull(mSelectedDevice)) {
             return
         }
-        mSubscriptionControl.registerAVTransport(mSelectedDevice!!  , context)
+        mSubscriptionControl.registerAVTransport(mSelectedDevice!!  )
     }
 
-    override fun registerRenderingControl(context: Context) {
+    override fun registerRenderingControl() {
         if (isNull(mSelectedDevice)) {
             return
         }
-        mSubscriptionControl.registerRenderingControl(mSelectedDevice!!, context)
+        mSubscriptionControl.registerRenderingControl(mSelectedDevice!!)
     }
 
     override fun destroy() {

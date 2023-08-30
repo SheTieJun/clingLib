@@ -83,7 +83,6 @@ class ClingUpnpService : AndroidUpnpServiceImpl() {
                         return object : HttpServlet() {
                             @Throws(ServletException::class, IOException::class)
                             override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
-                                val startTime = System.currentTimeMillis()
                                 val async = req.startAsync()
                                 async.timeout = (getConfiguration().asyncTimeoutSeconds * 1000).toLong()
                                 async.addListener(object : AsyncListener {

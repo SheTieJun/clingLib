@@ -139,18 +139,14 @@ class ClingManager private constructor() : IClingManager {
         mDeviceManager!!.cleanSelectedDevice()
     }
 
-    override fun registerAVTransport(context: Context?) {
-        context?.let {
-            if (isNull(mDeviceManager)) return
-            mDeviceManager!!.registerAVTransport(context)
-        }
+    override fun registerAVTransport() {
+        if (isNull(mDeviceManager)) return
+        mDeviceManager!!.registerAVTransport()
     }
 
-    override fun registerRenderingControl(context: Context?) {
-        context?.let {
-            if (isNull(mDeviceManager)) return
-            mDeviceManager!!.registerRenderingControl(context)
-        }
+    override fun registerRenderingControl() {
+        if (isNull(mDeviceManager)) return
+        mDeviceManager!!.registerRenderingControl()
     }
 
     override fun setUpnpService(upnpService: AndroidUpnpService?) {
@@ -201,7 +197,7 @@ class ClingManager private constructor() : IClingManager {
         mServiceConnection?.let { context.unbindService(it) }
     }
 
-    fun updateCurrentVolume(volume: Int?) {
+    internal fun updateCurrentVolume(volume: Int?) {
         curVolume.postValue(volume)
     }
 
@@ -236,8 +232,8 @@ class ClingManager private constructor() : IClingManager {
             getInstant().setReferer(referer)
         }
 
-        fun playNew(url: String, title:String,itemType: ClingPlayType = ClingPlayType.TYPE_VIDEO, callback: ControlCallback? = null) {
-            getInstant().mClingPlayControl.playNew(url,title, itemType, callback)
+        fun playNew(url: String, title: String, itemType: ClingPlayType = ClingPlayType.TYPE_VIDEO, callback: ControlCallback? = null) {
+            getInstant().mClingPlayControl.playNew(url, title, itemType, callback)
         }
 
         fun play(callback: ControlCallback? = null) {

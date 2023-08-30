@@ -7,12 +7,12 @@ internal interface ISubscriptionControl  {
     /**
      * 监听投屏端 AVTransport 回调
      */
-    fun registerAVTransport(device: ClingDevice, context: Context)
+    fun registerAVTransport(device: ClingDevice)
 
     /**
      * 监听投屏端 RenderingControl 回调
      */
-    fun registerRenderingControl(device: ClingDevice, context: Context)
+    fun registerRenderingControl(device: ClingDevice)
 
     /**
      * 销毁: 释放资源

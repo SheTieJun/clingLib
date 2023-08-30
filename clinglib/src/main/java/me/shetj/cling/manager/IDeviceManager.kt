@@ -22,13 +22,13 @@ interface IDeviceManager {
      * 监听投屏端 AVTransport 回调
      * @param context   用于接收到消息发广播
      */
-    fun registerAVTransport(context: Context)
+    fun registerAVTransport()
 
     /**
      * 监听投屏端 RenderingControl 回调
      * @param context   用于接收到消息发广播
      */
-    fun registerRenderingControl(context: Context)
+    fun registerRenderingControl()
 
     /**
      * 销毁

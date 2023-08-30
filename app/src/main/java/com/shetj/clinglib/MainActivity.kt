@@ -43,8 +43,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
                 ClingManager.playNew(url,"直播视频介绍", ClingPlayType.TYPE_VIDEO, object : ControlCallback {
                     override fun success(response: Any) {
                         "投放成功".showToast()
-                        ClingManager.getInstant().registerAVTransport(this@MainActivity)
-                        ClingManager.getInstant().registerRenderingControl(this@MainActivity)
                     }
 
                     override fun fail(response: Exception) {

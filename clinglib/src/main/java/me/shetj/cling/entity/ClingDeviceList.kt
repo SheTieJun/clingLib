@@ -10,7 +10,7 @@ internal object ClingDeviceList   {
 
 
     fun removeDevice(device: ClingDevice?) {
-        mClingDeviceList?.remove(device)
+        mClingDeviceList.remove(device)
     }
 
     fun addDevice(device: ClingDevice?) {
@@ -18,14 +18,14 @@ internal object ClingDeviceList   {
             if (contain(device.device)) {
                 return
             }
-            mClingDeviceList?.add(device)
+            mClingDeviceList.add(device)
         }
     }
 
    fun getClingDevice( device :Device<*,*,*>?):ClingDevice?{
-      return mClingDeviceList?.find {
-           it.device == device
-       }
+      return mClingDeviceList.find {
+          it.device == device
+      }
    }
 
     fun contain(device:Device<*,*,*>):Boolean{
@@ -33,10 +33,7 @@ internal object ClingDeviceList   {
     }
 
     fun getClingDeviceList(): MutableList<ClingDevice> {
-        if (mClingDeviceList == null) {
-            mClingDeviceList = ArrayList()
-        }
-        return mClingDeviceList!!
+        return mClingDeviceList
     }
 
     fun setClingDeviceList(clingDeviceList: MutableList<ClingDevice>?) {

@@ -14,7 +14,7 @@ internal class SubscriptionControl : ISubscriptionControl{
     private var mRenderingControlSubscriptionCallback: RenderingControlSubscriptionCallback? = null
 
 
-    override fun registerAVTransport(device: ClingDevice, context: Context) {
+    override fun registerAVTransport(device: ClingDevice) {
         if (isNotNull(mAVTransportSubscriptionCallback)) {
             mAVTransportSubscriptionCallback!!.end()
         }
@@ -22,11 +22,11 @@ internal class SubscriptionControl : ISubscriptionControl{
         if (isNull(controlPointImpl)) {
             return
         }
-        mAVTransportSubscriptionCallback = AVTransportSubscriptionCallback(device.device.findService(ClingManager.AV_TRANSPORT_SERVICE), context)
+        mAVTransportSubscriptionCallback = AVTransportSubscriptionCallback(device.device.findService(ClingManager.AV_TRANSPORT_SERVICE))
         controlPointImpl!!.execute(mAVTransportSubscriptionCallback)
     }
 
-    override fun registerRenderingControl(device: ClingDevice, context: Context) {
+    override fun registerRenderingControl(device: ClingDevice) {
         if (isNotNull(mRenderingControlSubscriptionCallback)) {
             mRenderingControlSubscriptionCallback!!.end()
         }
@@ -34,7 +34,7 @@ internal class SubscriptionControl : ISubscriptionControl{
         if (isNull(controlPointImpl)) {
             return
         }
-        mRenderingControlSubscriptionCallback = RenderingControlSubscriptionCallback(device.device.findService(ClingManager.RENDERING_CONTROL_SERVICE), context)
+        mRenderingControlSubscriptionCallback = RenderingControlSubscriptionCallback(device.device.findService(ClingManager.RENDERING_CONTROL_SERVICE))
         controlPointImpl!!.execute(mRenderingControlSubscriptionCallback)
     }
 

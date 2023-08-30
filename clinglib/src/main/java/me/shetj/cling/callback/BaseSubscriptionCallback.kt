@@ -1,6 +1,5 @@
 package me.shetj.cling.callback
 
-import android.content.Context
 import android.util.Log
 import org.fourthline.cling.controlpoint.SubscriptionCallback
 import org.fourthline.cling.model.gena.CancelReason
@@ -8,7 +7,7 @@ import org.fourthline.cling.model.gena.GENASubscription
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
 
-abstract class BaseSubscriptionCallback protected constructor(service: Service<*, *>?, protected var mContext: Context?) :
+abstract class BaseSubscriptionCallback protected constructor(service: Service<*, *>?) :
     SubscriptionCallback(service, SUBSCRIPTION_DURATION_SECONDS) {
     override fun failed(subscription: GENASubscription<*>?, responseStatus: UpnpResponse?, exception: Exception?, defaultMsg: String?) {
         Log.e(TAG, "AVTransportSubscriptionCallback failed.")
@@ -17,7 +16,6 @@ abstract class BaseSubscriptionCallback protected constructor(service: Service<*
     override fun established(subscription: GENASubscription<*>?) {}
     override fun eventsMissed(subscription: GENASubscription<*>?, numberOfMissedEvents: Int) {}
     override fun ended(subscription: GENASubscription<*>?, reason: CancelReason?, responseStatus: UpnpResponse?) {
-        mContext = null
         Log.e(TAG, "ended")
     }
 

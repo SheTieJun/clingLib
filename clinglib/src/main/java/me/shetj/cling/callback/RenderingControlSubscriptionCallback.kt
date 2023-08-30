@@ -1,6 +1,5 @@
 package me.shetj.cling.callback
 
-import android.content.Context
 import android.util.Log
 import me.shetj.cling.ClingManager
 import me.shetj.cling.util.Utils
@@ -12,17 +11,14 @@ import org.fourthline.cling.support.lastchange.LastChange
 import org.fourthline.cling.support.renderingcontrol.lastchange.RenderingControlLastChangeParser
 import org.fourthline.cling.support.renderingcontrol.lastchange.RenderingControlVariable.Volume
 
-internal class RenderingControlSubscriptionCallback(service: Service<*, *>?, context: Context?) :
-    BaseSubscriptionCallback(service, context) {
+internal class RenderingControlSubscriptionCallback(service: Service<*, *>?) :
+    BaseSubscriptionCallback(service) {
 
     private val TAG = RenderingControlSubscriptionCallback::class.java.simpleName
 
     override fun eventReceived(subscription: GENASubscription<*>) {
         val values = subscription.currentValues
         if (isNull(values)) {
-            return
-        }
-        if (isNull(mContext)) {
             return
         }
         if (!values.containsKey("LastChange")) {

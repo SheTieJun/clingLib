@@ -6,7 +6,6 @@ import me.shetj.cling.ClingManager
 import me.shetj.cling.entity.ClingPlayState
 import me.shetj.cling.util.Utils.getIntTime
 import me.shetj.cling.util.Utils.isNotNull
-import me.shetj.cling.util.Utils.isNull
 import org.fourthline.cling.model.gena.GENASubscription
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.support.avtransport.lastchange.AVTransportLastChangeParser
@@ -15,9 +14,8 @@ import org.fourthline.cling.support.avtransport.lastchange.AVTransportVariable.R
 import org.fourthline.cling.support.lastchange.LastChange
 import org.fourthline.cling.support.model.TransportState
 
-internal class AVTransportSubscriptionCallback(service: Service<*, *>?, context: Context?) : BaseSubscriptionCallback(service, context) {
+internal class AVTransportSubscriptionCallback(service: Service<*, *>?) : BaseSubscriptionCallback(service) {
     override fun eventReceived(subscription: GENASubscription<*>) { // 这里进行 事件接收处理
-        if (isNull(mContext)) return
         val values: Map<*, *>? = subscription.currentValues
         if (values != null && values.containsKey("LastChange")) {
             val lastChangeValue = values["LastChange"].toString()

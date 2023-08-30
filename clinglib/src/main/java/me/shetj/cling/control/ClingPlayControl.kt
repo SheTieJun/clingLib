@@ -54,6 +54,8 @@ internal class ClingPlayControl : IPlayControl {
                     }
 
                     override fun success(response: Any) {
+                        ClingManager.getInstant().registerAVTransport()
+                        ClingManager.getInstant().registerRenderingControl()
                         play(callback) // 3、播放视频
                     }
                 })

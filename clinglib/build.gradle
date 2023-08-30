@@ -47,3 +47,5 @@ dependencies {
     // Servlet
     api 'javax.servlet:javax.servlet-api:3.1.0'
 }
+
+apply from: "uploadLocal.gradle"
