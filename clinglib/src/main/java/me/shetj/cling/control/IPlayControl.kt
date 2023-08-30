@@ -4,13 +4,13 @@ import me.shetj.cling.callback.ControlCallback
 import me.shetj.cling.callback.ControlReceiveCallback
 import me.shetj.cling.entity.ClingPlayType
 
-interface IPlayControl {
+internal interface IPlayControl {
     /**
      * 播放一个新片源
      *
      * @param url   片源地址
      */
-    fun playNew(url: String?, ItemType: ClingPlayType, callback: ControlCallback ?)
+    fun playNew(url: String?, title:String,itemType: ClingPlayType, callback: ControlCallback ?)
 
     /**
      * 继续播放

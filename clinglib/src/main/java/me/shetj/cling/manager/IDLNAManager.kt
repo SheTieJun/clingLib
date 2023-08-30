@@ -1,11 +1,11 @@
 package me.shetj.cling.manager
 
 import android.content.Context
-import me.shetj.cling.entity.IControlPoint
-import me.shetj.cling.entity.IDevice
+import me.shetj.cling.entity.ClingDevice
+import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.registry.RegistryListener
 
-interface IDLNAManager <T> {
+interface IDLNAManager {
     /**
      * 搜索所有的设备
      */
@@ -16,14 +16,14 @@ interface IDLNAManager <T> {
      *
      * @return  设备列表
      */
-    val dmrDevices: Collection<*>?
+    val dmrDevices: Collection<ClingDevice>?
 
     /**
      * 获取控制点
      *
      * @return  控制点
      */
-    val controlPoint: IControlPoint<*>?
+    val controlPoint: ControlPoint?
 
     /**
      * 获取选中的设备
@@ -34,7 +34,9 @@ interface IDLNAManager <T> {
      * 设置选中的设备
      * @param device    已选中设备
      */
-    var selectedDevice: IDevice<T>?
+    fun setSelectDevice(selectedDevice: ClingDevice)
+
+    fun getSelectedDevice(): ClingDevice?
 
     /**
      * 取消选中的设备
@@ -62,6 +64,7 @@ interface IDLNAManager <T> {
      * 移除监听
      */
     fun removeListener(registryListener: RegistryListener)
+
     /**
      * 销毁
      */

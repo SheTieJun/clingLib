@@ -1,4 +1,4 @@
-package com.lizhiweik.clinglib
+package com.shetj.clinglib
 
 import org.junit.Test
 

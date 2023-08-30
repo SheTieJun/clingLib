@@ -8,7 +8,8 @@ import org.fourthline.cling.model.gena.GENASubscription
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
 
-abstract class BaseSubscriptionCallback protected constructor(service: Service<*, *>?, protected var mContext: Context?) : SubscriptionCallback(service, SUBSCRIPTION_DURATION_SECONDS) {
+abstract class BaseSubscriptionCallback protected constructor(service: Service<*, *>?, protected var mContext: Context?) :
+    SubscriptionCallback(service, SUBSCRIPTION_DURATION_SECONDS) {
     override fun failed(subscription: GENASubscription<*>?, responseStatus: UpnpResponse?, exception: Exception?, defaultMsg: String?) {
         Log.e(TAG, "AVTransportSubscriptionCallback failed.")
     }

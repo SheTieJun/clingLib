@@ -2,11 +2,11 @@ package me.shetj.cling.entity
 
 import org.fourthline.cling.model.meta.Device
 
-class ClingDevice(private val mDevice: Device<*, *, *>) : IDevice<Device<*, *, *>?> {
+class ClingDevice(private val mDevice: Device<*, *, *>) {
 
     var isSelected = false
 
-    override val device: Device<*, *, *>
+    val device: Device<*, *, *>
         get() = mDevice
 
     val name:String

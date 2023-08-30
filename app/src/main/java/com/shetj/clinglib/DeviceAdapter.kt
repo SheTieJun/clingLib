@@ -1,31 +1,31 @@
-package com.lizhiweik.clinglib
+package com.shetj.clinglib
 
 import android.graphics.Color
-import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
+import me.shetj.base.base.BaseSAdapter
 import me.shetj.cling.entity.ClingDevice
 
-class AutoRecycleViewAdapter(data: MutableList<ClingDevice>?) : BaseQuickAdapter<ClingDevice, BaseViewHolder>(R.layout.item_recycle_string, data) {
+class DeviceAdapter(data:MutableList<ClingDevice>?=null) : BaseSAdapter<ClingDevice, BaseViewHolder>(R.layout.item_recycle_string,data) {
 
     private var playPosition = -1
 
     private var oldPosition = -1
 
-    var i = 0
-
-    override fun convert(helper: BaseViewHolder, item: ClingDevice?) {
-        item?.let {
-            if (helper.layoutPosition == playPosition) {
-                helper.setText(R.id.tv_string, "选中:" +item.name)
+    override fun convert(holder: BaseViewHolder, item: ClingDevice) {
+        item.let {
+            if (holder.layoutPosition == playPosition) {
+                holder.setText(R.id.tv_string, "选中:【${holder.bindingAdapterPosition}】" +item.name)
             } else {
-                helper.setText(R.id.tv_string, item.name)
+                holder.setText(R.id.tv_string,"【${holder.bindingAdapterPosition}】" +item.name)
             }
-            helper.setTextColor(R.id.tv_string,when(helper.layoutPosition == playPosition){
+            holder.setTextColor(R.id.tv_string,when(holder.layoutPosition == playPosition){
                 true ->  Color.RED
                 false -> Color.BLACK
             })
         }
     }
+
+
 
     fun setPlay(i: Int) {
         if (playPosition != i) {
@@ -40,7 +40,7 @@ class AutoRecycleViewAdapter(data: MutableList<ClingDevice>?) : BaseQuickAdapter
 
     fun removeDevice(device:  ClingDevice) {
         data.find {
-            it.device?.equals(device) ?: false
+            it.device.equals(device)
         }?.apply {
             remove(this)
         }

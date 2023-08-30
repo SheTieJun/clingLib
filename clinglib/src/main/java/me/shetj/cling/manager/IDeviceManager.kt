@@ -1,17 +1,17 @@
 package me.shetj.cling.manager
 
 import android.content.Context
-import me.shetj.cling.entity.IDevice
+import me.shetj.cling.entity.ClingDevice
 
-interface IDeviceManager<T> {
+interface IDeviceManager {
     /**
      * 获取选中设备
      */
-    fun getSelectedDevice() :IDevice<T>?
+    fun getSelectedDevice() :ClingDevice?
     /**
      * 设置选中设备
      */
-    fun setSelectedDevice(device: IDevice<T>?)
+    fun setSelectedDevice(device: ClingDevice)
 
     /**
      * 取消选中设备

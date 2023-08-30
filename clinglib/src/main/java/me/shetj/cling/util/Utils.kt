@@ -2,7 +2,7 @@ package me.shetj.cling.util
 
 import java.util.*
 
-object Utils {
+internal object Utils {
     @JvmStatic
     fun isNull(obj: Any?): Boolean {
         return obj == null
@@ -46,5 +46,9 @@ object Utils {
         }
         val second = Integer.valueOf(tmp[0]) * 3600 + Integer.valueOf(tmp[1]) * 60 + Integer.valueOf(tmp[2])
         return second * 1000
+    }
+
+    fun isEmpty(list: Collection<*>?): Boolean {
+        return !(list != null && list.isNotEmpty())
     }
 }

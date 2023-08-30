@@ -1,15 +1,12 @@
 package me.shetj.cling.entity
 
+import me.shetj.cling.ClingManager
 import org.fourthline.cling.model.meta.Device
 
-object ClingDeviceList   {
+internal object ClingDeviceList   {
 
-    private var mClingDeviceList: MutableList<ClingDevice>? = null
+    private var mClingDeviceList: MutableList<ClingDevice> = mutableListOf()
 
-
-    init {
-        mClingDeviceList = ArrayList()
-    }
 
 
     fun removeDevice(device: ClingDevice?) {
@@ -18,12 +15,14 @@ object ClingDeviceList   {
 
     fun addDevice(device: ClingDevice?) {
         device?.let {
+            if (contain(device.device)) {
+                return
+            }
             mClingDeviceList?.add(device)
         }
     }
 
    fun getClingDevice( device :Device<*,*,*>?):ClingDevice?{
-
       return mClingDeviceList?.find {
            it.device == device
        }
@@ -44,6 +43,11 @@ object ClingDeviceList   {
         clingDeviceList?.let {
             mClingDeviceList = clingDeviceList
         }
+    }
+
+    fun clear(){
+        mClingDeviceList.clear()
+        ClingManager.getInstant().updateCurrentDevices(mClingDeviceList)
     }
 
 }

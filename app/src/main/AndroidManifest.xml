@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.lizhiweik.clinglib">
+    package="com.shetj.clinglib">
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/shetj_logo"
         android:label="@string/app_name"
-        android:name=".APP"
         android:roundIcon="@mipmap/shetj_logo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/BaseTheme.MD3">
+
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

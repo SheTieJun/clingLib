@@ -1,10 +1,10 @@
 package me.shetj.cling.manager
 
-import me.shetj.cling.service.ClingUpnpService
+import org.fourthline.cling.android.AndroidUpnpService
 import org.fourthline.cling.registry.Registry
 
-interface IClingManager<T> : IDLNAManager<T> {
-    fun setUpnpService(upnpService: ClingUpnpService?)
-    fun setDeviceManager(deviceManager: IDeviceManager<T>?)
+interface IClingManager  : IDLNAManager  {
+    fun setUpnpService(upnpService: AndroidUpnpService?)
+    fun setDeviceManager(deviceManager: IDeviceManager?)
     val registry: Registry?
 }

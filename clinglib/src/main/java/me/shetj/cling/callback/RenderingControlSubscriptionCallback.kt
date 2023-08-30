@@ -1,16 +1,19 @@
 package me.shetj.cling.callback
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
-import me.shetj.cling.entity.Intents
+import me.shetj.cling.ClingManager
+import me.shetj.cling.util.Utils
 import me.shetj.cling.util.Utils.isNull
 import org.fourthline.cling.model.gena.GENASubscription
 import org.fourthline.cling.model.meta.Service
+import org.fourthline.cling.support.avtransport.lastchange.AVTransportVariable.RelativeTimePosition
 import org.fourthline.cling.support.lastchange.LastChange
 import org.fourthline.cling.support.renderingcontrol.lastchange.RenderingControlLastChangeParser
 import org.fourthline.cling.support.renderingcontrol.lastchange.RenderingControlVariable.Volume
-class RenderingControlSubscriptionCallback(service: Service<*, *>?, context: Context?) : BaseSubscriptionCallback(service, context) {
+
+internal class RenderingControlSubscriptionCallback(service: Service<*, *>?, context: Context?) :
+    BaseSubscriptionCallback(service, context) {
 
     private val TAG = RenderingControlSubscriptionCallback::class.java.simpleName
 
@@ -31,13 +34,17 @@ class RenderingControlSubscriptionCallback(service: Service<*, *>?, context: Con
         try {
             lastChange = LastChange(RenderingControlLastChangeParser(), lastChangeValue)
             //获取音量 volume
-            var volume = 0
+            val volume: Int
             if (lastChange.getEventedValue(0, Volume::class.java) != null) {
                 volume = lastChange.getEventedValue(0, Volume::class.java).value.volume
-                Log.e(TAG, "onVolumeChange volume: $volume")
-                val intent = Intent(Intents.ACTION_VOLUME_CALLBACK)
-                intent.putExtra(Intents.EXTRA_VOLUME, volume)
-                mContext?.sendBroadcast(intent)
+                ClingManager.getInstant().updateCurrentVolume(volume)
+            }
+            val position: String
+            val eventedValue = lastChange.getEventedValue(0, RelativeTimePosition::class.java)
+            if (Utils.isNotNull(eventedValue)) {
+                position = lastChange.getEventedValue(0, RelativeTimePosition::class.java).value
+                val intTime = Utils.getIntTime(position)
+                ClingManager.getInstant().updatePlayPosition(intTime)
             }
         } catch (e: Exception) {
             e.printStackTrace()

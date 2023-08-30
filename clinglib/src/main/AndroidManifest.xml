@@ -9,7 +9,6 @@
     <application
         >
         <service
-            android:name=".service.ClingUpnpService"
-            android:exported="false" />
+            android:name=".service.ClingUpnpService" />
     </application>
 </manifest>

@@ -1,21 +1,22 @@
 package me.shetj.cling.listener
 
 import android.util.Log
+import me.shetj.cling.ClingManager
 import me.shetj.cling.entity.ClingDevice
 import me.shetj.cling.entity.ClingDeviceList
-import me.shetj.cling.manager.ClingManager
-import me.shetj.cling.util.Utils.isNotNull
 import org.fourthline.cling.model.meta.Device
 import org.fourthline.cling.model.meta.LocalDevice
 import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.registry.DefaultRegistryListener
 import org.fourthline.cling.registry.Registry
 
-class BrowseRegistryListener : DefaultRegistryListener() {
+internal class BrowseRegistryListener : DefaultRegistryListener() {
     private var mOnDeviceListChangedListener: DeviceListChangedListener? = null
+
     /* Discovery performance optimization for very slow Android devices! */
-    override fun remoteDeviceDiscoveryStarted(registry: Registry, device: RemoteDevice) { // 在这里设备拥有服务 也木有 action。。
-//        deviceAdded(device);
+    override fun remoteDeviceDiscoveryStarted(registry: Registry, device: RemoteDevice) {
+        Log.i(TAG, "remoteDeviceDiscoveryStarted: " + device.displayString)
+        deviceAdded(device);
     }
 
     override fun remoteDeviceDiscoveryFailed(registry: Registry, device: RemoteDevice, ex: Exception) {
@@ -25,40 +26,41 @@ class BrowseRegistryListener : DefaultRegistryListener() {
 
     /* End of optimization, you can remove the whole block if your Android handset is fast (>= 600 Mhz) */
     override fun remoteDeviceAdded(registry: Registry, device: RemoteDevice) {
+        Log.i(TAG, "remoteDeviceAdded: " + device.displayString)
         deviceAdded(device)
     }
 
     override fun remoteDeviceRemoved(registry: Registry, device: RemoteDevice) {
+        Log.i(TAG, "remoteDeviceRemoved: " + device.displayString)
         deviceRemoved(device)
     }
 
-    override fun localDeviceAdded(registry: Registry, device: LocalDevice) { //        deviceAdded(device); // 本地设备 已加入
+    override fun localDeviceAdded(registry: Registry, device: LocalDevice) {
+        Log.i(TAG, "localDeviceAdded: " + device.displayString)
+        deviceAdded(device); // 本地设备 已加入
     }
 
-    override fun localDeviceRemoved(registry: Registry, device: LocalDevice) { //        deviceRemoved(device); // 本地设备 已移除
+    override fun localDeviceRemoved(registry: Registry, device: LocalDevice) {
+        Log.i(TAG, "localDeviceRemoved: " + device.displayString)
+        deviceRemoved(device); // 本地设备 已移除
     }
 
     private fun deviceAdded(device: Device<*, *, *>) {
-        Log.e(TAG, "deviceAdded")
         if (device.type != ClingManager.DMR_DEVICE_TYPE) {
-            Log.e(TAG, "deviceAdded called, but not match")
             return
         }
-        if (isNotNull(mOnDeviceListChangedListener)) {
-            val clingDevice = ClingDevice(device)
-            ClingDeviceList.addDevice(clingDevice)
-            mOnDeviceListChangedListener!!.onDeviceAdded(clingDevice)
-        }
+        val clingDevice = ClingDevice(device)
+        ClingDeviceList.addDevice(clingDevice)
+        ClingManager.getInstant().updateCurrentDevices(ClingDeviceList.getClingDeviceList())
+        mOnDeviceListChangedListener?.onDeviceAdded(clingDevice)
     }
 
-    fun deviceRemoved(device: Device<*, *, *>?) {
-        Log.e(TAG, "deviceRemoved")
-        if (isNotNull(mOnDeviceListChangedListener)) {
-            val clingDevice = ClingDeviceList.getClingDevice(device)
-            if (clingDevice != null) {
-                ClingDeviceList.removeDevice(clingDevice)
-                mOnDeviceListChangedListener!!.onDeviceRemoved(clingDevice)
-            }
+    private fun deviceRemoved(device: Device<*, *, *>) {
+        val clingDevice = ClingDeviceList.getClingDevice(device)
+        if (clingDevice != null) {
+            ClingDeviceList.removeDevice(clingDevice)
+            ClingManager.getInstant().updateCurrentDevices(ClingDeviceList.getClingDeviceList())
+            mOnDeviceListChangedListener?.onDeviceRemoved(clingDevice)
         }
     }
 

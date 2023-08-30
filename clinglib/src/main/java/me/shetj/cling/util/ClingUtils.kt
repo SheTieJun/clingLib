@@ -1,14 +1,13 @@
 package me.shetj.cling.util
 
-import me.shetj.cling.entity.IDevice
-import me.shetj.cling.manager.ClingManager
+import me.shetj.cling.ClingManager
 import me.shetj.cling.util.Utils.isNull
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.meta.Device
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.model.types.ServiceType
 
-object ClingUtils {
+internal object ClingUtils {
     /**
      * 通过 ServiceType 获取已选择设备的服务
      *
@@ -17,11 +16,11 @@ object ClingUtils {
      */
     @JvmStatic
     fun findServiceFromSelectedDevice(serviceType: ServiceType?): Service<*, *>? {
-        val selectedDevice: IDevice<*>? = ClingManager.instance.selectedDevice
+        val selectedDevice  = ClingManager.getInstant().getSelectedDevice()
         if (isNull(selectedDevice)) {
             return null
         }
-        val device = selectedDevice!!.device as Device<*, *, *>
+        val device = selectedDevice!!.device
         return device.findService(serviceType)
     }
 
@@ -43,9 +42,6 @@ object ClingUtils {
     @JvmStatic
     val controlPoint: ControlPoint?
         get() {
-            val controlPoint = ClingManager.instance.controlPoint
-            return if (isNull(controlPoint)) {
-                null
-            } else controlPoint!!.getControlPoint() as ControlPoint?
+            return ClingManager.getInstant().controlPoint
         }
 }

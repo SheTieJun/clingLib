@@ -1,4 +1,4 @@
-package com.lizhiweik.clinglib
+package com.shetj.clinglib
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

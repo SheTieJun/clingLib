@@ -1,2 +1,25 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven { url "https://jitpack.io" }
+        mavenLocal()
+        mavenCentral()
+        google()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        maven { url "https://jitpack.io" }
+        mavenLocal()
+        google()
+        mavenCentral()
+        maven {
+            url 'http://4thline.org/m2'
+            allowInsecureProtocol = true  //支持http
+        }
+    }
+}
 include ':app', ':clinglib'
-rootProject.name='clingLib'
+rootProject.name = 'clingLib'

@@ -4,19 +4,13 @@ import android.content.Context
 import me.shetj.cling.control.SubscriptionControl
 import me.shetj.cling.entity.ClingDevice
 import me.shetj.cling.entity.ClingDeviceList.getClingDeviceList
-import me.shetj.cling.entity.IDevice
 import me.shetj.cling.util.Utils.isNotNull
 import me.shetj.cling.util.Utils.isNull
-import org.fourthline.cling.model.meta.Device
 
-class  DeviceManager <T> : IDeviceManager <T> {
+internal class  DeviceManager  : IDeviceManager  {
 
     private var mSelectedDevice: ClingDevice? = null
-    private var mSubscriptionControl: SubscriptionControl? = null
-
-    init {
-        mSubscriptionControl = SubscriptionControl()
-    }
+    private var mSubscriptionControl: SubscriptionControl  = SubscriptionControl()
 
 
     override fun cleanSelectedDevice() {
@@ -29,26 +23,25 @@ class  DeviceManager <T> : IDeviceManager <T> {
         if (isNull(mSelectedDevice)) {
             return
         }
-
-        mSubscriptionControl?.registerAVTransport(mSelectedDevice as IDevice<Device<*, *, *>>, context)
+        mSubscriptionControl.registerAVTransport(mSelectedDevice!!  , context)
     }
 
     override fun registerRenderingControl(context: Context) {
         if (isNull(mSelectedDevice)) {
             return
         }
-        mSubscriptionControl?.registerRenderingControl(mSelectedDevice as IDevice<Device<*, *, *>>, context)
+        mSubscriptionControl.registerRenderingControl(mSelectedDevice!!, context)
     }
 
     override fun destroy() {
         if (isNotNull(mSubscriptionControl)) {
-            mSubscriptionControl!!.destroy()
+            mSubscriptionControl.destroy()
         }
     }
 
 
-    override fun setSelectedDevice(device: IDevice<T>?) {
-        mSelectedDevice = device as ClingDevice
+    override fun setSelectedDevice(device: ClingDevice) {
+        mSelectedDevice = device
         // 重置选中状态
         val clingDeviceList: Collection<ClingDevice> =
             getClingDeviceList()
@@ -61,8 +54,8 @@ class  DeviceManager <T> : IDeviceManager <T> {
         mSelectedDevice?.isSelected = true
     }
 
-    override fun getSelectedDevice(): IDevice<T>? {
-        return mSelectedDevice as  IDevice<T>
+    override fun getSelectedDevice(): ClingDevice? {
+        return mSelectedDevice
     }
 
 }
