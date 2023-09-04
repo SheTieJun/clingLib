@@ -1,9 +1,9 @@
 package com.shetj.clinglib
 
 import android.graphics.Color
+import com.android.cling.entity.ClingDevice
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import me.shetj.base.base.BaseSAdapter
-import me.shetj.cling.entity.ClingDevice
 
 class DeviceAdapter(data:MutableList<ClingDevice>?=null) : BaseSAdapter<ClingDevice, BaseViewHolder>(R.layout.item_recycle_string,data) {
 
@@ -38,7 +38,7 @@ class DeviceAdapter(data:MutableList<ClingDevice>?=null) : BaseSAdapter<ClingDev
         }
     }
 
-    fun removeDevice(device:  ClingDevice) {
+    fun removeDevice(device: ClingDevice) {
         data.find {
             it.device.equals(device)
         }?.apply {

@@ -3,21 +3,28 @@ package com.shetj.clinglib
 import android.content.*
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import com.android.cling.DLNAManager
+import com.android.cling.control.DeviceControl
+import com.android.cling.control.OnDeviceControlListener
+import com.android.cling.control.ServiceActionCallback
+import com.android.cling.entity.ClingPlayState
+import com.android.cling.entity.ClingPlayType
+import com.android.cling.startBindUpnpService
+import com.android.cling.stopUpnpService
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.shetj.clinglib.databinding.ActivityMainBinding
 import me.shetj.base.ktx.setAppearance
-import me.shetj.cling.*
-import me.shetj.cling.callback.ControlCallback
-import me.shetj.cling.entity.*
-import me.shetj.cling.ClingManager
 import me.shetj.base.ktx.showToast
 import me.shetj.base.ktx.toJson
 import me.shetj.base.mvvm.viewbind.BaseBindingActivity
 import me.shetj.base.mvvm.viewbind.BaseViewModel
 import me.shetj.base.tools.app.Tim
+import org.fourthline.cling.model.meta.Device
 
 class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
     private lateinit var mAdapter: DeviceAdapter
+    private var control: DeviceControl ?=null
 
     //播放、停止相关控制
 
@@ -39,60 +46,43 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
     fun initView() {
         mBinding.startScreen.setOnClickListener {
             val url = "https://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
-            if (ClingManager.getInstant().getPlayState().value == ClingPlayState.STOP){
-                ClingManager.playNew(url,"直播视频介绍", ClingPlayType.TYPE_VIDEO, object : ControlCallback {
-                    override fun success(response: Any) {
-                        "投放成功".showToast()
-                    }
+            control?.setAVTransportURI(url,"直播视频介绍", ClingPlayType.TYPE_VIDEO, object : ServiceActionCallback<Unit> {
+                override fun onSuccess(result: Unit) {
+                    "投放成功".showToast()
+                }
 
-                    override fun fail(response: Exception) {
-
-                    }
-                })
-            }else{
-                ClingManager.play()
-            }
+                override fun onFailure(msg: String) {
+                    "投放失败".showToast()
+                }
+            })
         }
 
         mBinding.stopScreen.setOnClickListener {
-            ClingManager.stop(object : ControlCallback {
-                override fun success(response: Any) {
+            control?.stop(object : ServiceActionCallback<Unit> {
+                override fun onSuccess(result: Unit) {
                     "停止成功".showToast()
                 }
 
-                override fun fail(response: Exception) {
+                override fun onFailure(msg: String) {
                     "停止失败".showToast()
                 }
             })
         }
         mBinding.search.setOnClickListener {
-            ClingManager.getInstant().searchDevices()
+            DLNAManager.getInstant().searchDevices()
         }
         showRecycleView()
     }
 
     private fun initData() {
         bindServices()
-
-        // TODO 可能需要轮询获取当前进度
-//        ClingManager.getInstant().getCurPosition().observe(this) {
-//            mBinding.playPosition.text = "当前进度：$it"
-//        }
-
-        ClingManager.getInstant().getCurVolume().observe(this) {
-            mBinding.playVolume.text = "当前音量：$it"
-        }
-
-        ClingManager.getInstant().getPlayState().observe(this) {
-            mBinding.playState.text = "当前状态：${it.type}"
-        }
     }
 
 
     private fun bindServices() { // Bind UPnP service
         mUpnpServiceConnection = startBindUpnpService {
             Log.i("Cling", "startBindUpnpService OK")
-            Log.i("Cling", ClingManager.getInstant().dmrDevices.toJson().toString())
+            Log.i("Cling", DLNAManager.getInstant().dmrDevices.toJson().toString())
 
         }
     }
@@ -101,7 +91,18 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         mAdapter = DeviceAdapter().apply {
             setOnItemClickListener { _, _, position ->
                 getItem(position).apply {
-                    ClingManager.getInstant().setSelectDevice(this)
+                    control = DLNAManager.getInstant().connectDevice(this, object : OnDeviceControlListener {
+                        override fun onConnected(device: Device<*, *, *>) {
+                            super.onConnected(device)
+                            Toast.makeText(this@MainActivity, "连接成功", Toast.LENGTH_SHORT).show()
+                        }
+
+                        override fun onDisconnected(device: Device<*, *, *>) {
+                            super.onDisconnected(device)
+                            Toast.makeText(this@MainActivity, "无法连接: ${device.details.friendlyName}", Toast.LENGTH_SHORT).show()
+                        }
+
+                    })
                     setPlay(position)
                     mBinding.tvMsg.text = "您选择了：${this.name}"
                 }
@@ -109,9 +110,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         }
         mBinding.iRecyclerView.adapter = mAdapter
         mBinding.iRecyclerView.addItemDecoration(MaterialDividerItemDecoration(this, MaterialDividerItemDecoration.VERTICAL))
-        ClingManager.getInstant().getSearchDevices().observe(this) {
+        DLNAManager.getInstant().getSearchDevices().observe(this) {
             mAdapter.setList(it)
-            Log.i("Cling", " mAdapter.data.size = ${mAdapter.data.size}")
         }
     }
 
@@ -119,6 +119,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
     override fun onDestroy() {
         super.onDestroy()
         stopUpnpService(mUpnpServiceConnection)
-        ClingManager.getInstant().destroy()
+        DLNAManager.getInstant().destroy()
     }
 }

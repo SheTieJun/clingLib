@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdk rootProject.ext.compileSdkVersion
-    namespace "me.shetj.cling"
+    namespace "com.android.cling"
     defaultConfig {
         minSdk  rootProject.ext.minVersion
         targetSdk  rootProject.ext.compileSdkVersion
