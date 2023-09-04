@@ -12,7 +12,6 @@ import com.android.cling.control.EmptyDeviceControl
 import com.android.cling.control.OnDeviceControlListener
 import com.android.cling.entity.ClingDevice
 import com.android.cling.entity.ClingDeviceList
-import com.android.cling.entity.ClingPlayState
 import com.android.cling.listener.BrowseRegistryListener
 import com.android.cling.manager.IClingManager
 import com.android.cling.service.ClingUpnpService

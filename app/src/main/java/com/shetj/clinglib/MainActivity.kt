@@ -8,7 +8,6 @@ import com.android.cling.DLNAManager
 import com.android.cling.control.DeviceControl
 import com.android.cling.control.OnDeviceControlListener
 import com.android.cling.control.ServiceActionCallback
-import com.android.cling.entity.ClingPlayState
 import com.android.cling.entity.ClingPlayType
 import com.android.cling.startBindUpnpService
 import com.android.cling.stopUpnpService
@@ -52,7 +51,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
                 }
 
                 override fun onFailure(msg: String) {
-                    "投放失败".showToast()
+                    "投放失败:$msg".showToast()
                 }
             })
         }

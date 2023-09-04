@@ -22,32 +22,6 @@ import org.fourthline.cling.support.model.item.VideoItem
 import org.seamless.util.MimeType
 
 internal object ClingUtils {
-    /**
-     * 通过 ServiceType 获取已选择设备的服务
-     *
-     * @param serviceType   服务类型
-     * @return 服务
-     */
-    @JvmStatic
-     fun findServiceFromSelectedDevice(serviceType: ServiceType?): Service<*, *>? {
-        val selectedDevice = DLNAManager.getInstant().getSelectedDevice()
-        if (isNull(selectedDevice)) {
-            return null
-        }
-        val device = selectedDevice!!.device
-        return device.findService(serviceType)
-    }
-
-    /**
-     * 获取 device 的 avt 服务
-     *
-     * @param device    设备
-     * @return 服务
-     */
-    fun findAVTServiceByDevice(device: Device<*, *, *>): Service<*, *>? {
-        return device.findService(DLNAManager.AV_TRANSPORT_SERVICE)
-    }
-
 
     fun pushMediaToRender(url: String?, id: String, name: String, itemType: ClingPlayType): String {
         val size: Long = 0

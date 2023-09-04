@@ -38,14 +38,6 @@ import org.fourthline.cling.transport.spi.StreamServer
 
 class ClingUpnpService : AndroidUpnpServiceImpl() {
 
-    override fun createRouter(
-        configuration: UpnpServiceConfiguration?,
-        protocolFactory: ProtocolFactory?,
-        context: Context?
-    ): AndroidRouter {
-        return super.createRouter(configuration, protocolFactory, context)
-    }
-
     override fun createConfiguration(): UpnpServiceConfiguration {
         return object : AndroidUpnpServiceConfiguration() {
             override fun getExclusiveServiceTypes(): Array<ServiceType> = arrayOf(

@@ -4,8 +4,6 @@ import org.fourthline.cling.model.meta.Device
 
 class ClingDevice(private val mDevice: Device<*, *, *>) {
 
-    var isSelected = false
-
     val device: Device<*, *, *>
         get() = mDevice
 
