@@ -1,6 +1,6 @@
 package com.android.cling.listener
 
-import com.android.cling.DLNAManager
+import com.android.cling.ClingDLNAManager
 import com.android.cling.entity.ClingDevice
 import com.android.cling.entity.ClingDeviceList
 import org.fourthline.cling.model.meta.Device
@@ -25,14 +25,14 @@ internal class BrowseRegistryListener : DefaultRegistryListener() {
     private fun deviceAdded(device: Device<*, *, *>) {
         val clingDevice = ClingDevice(device)
         ClingDeviceList.addDevice(clingDevice)
-        DLNAManager.getInstant().updateCurrentDevices(ClingDeviceList.getClingDeviceList())
+        ClingDLNAManager.getInstant().updateCurrentDevices(ClingDeviceList.getClingDeviceList())
     }
 
     private fun deviceRemoved(device: Device<*, *, *>) {
         val clingDevice = ClingDeviceList.getClingDevice(device)
         if (clingDevice != null) {
             ClingDeviceList.removeDevice(clingDevice)
-            DLNAManager.getInstant().updateCurrentDevices(ClingDeviceList.getClingDeviceList())
+            ClingDLNAManager.getInstant().updateCurrentDevices(ClingDeviceList.getClingDeviceList())
         }
     }
 }

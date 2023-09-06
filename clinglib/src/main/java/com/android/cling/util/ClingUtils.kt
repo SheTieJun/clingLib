@@ -1,18 +1,12 @@
 package com.android.cling.util
 
-import com.android.cling.DLNAManager
 import com.android.cling.entity.ClingPlayType
 import com.android.cling.entity.ClingPlayType.TYPE_AUDIO
 import com.android.cling.entity.ClingPlayType.TYPE_IMAGE
 import com.android.cling.entity.ClingPlayType.TYPE_VIDEO
-import com.android.cling.util.Utils.isNull
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import org.fourthline.cling.controlpoint.ControlPoint
-import org.fourthline.cling.model.meta.Device
-import org.fourthline.cling.model.meta.Service
-import org.fourthline.cling.model.types.ServiceType
 import org.fourthline.cling.support.model.DIDLObject
 import org.fourthline.cling.support.model.ProtocolInfo
 import org.fourthline.cling.support.model.Res

@@ -11,13 +11,6 @@ interface IDLNAManager {
     fun searchDevices()
 
     /**
-     * 获取支持 Media 类型的设备
-     *
-     * @return  设备列表
-     */
-    val dmrDevices: Collection<ClingDevice>?
-
-    /**
      * 获取控制点
      *
      * @return  控制点

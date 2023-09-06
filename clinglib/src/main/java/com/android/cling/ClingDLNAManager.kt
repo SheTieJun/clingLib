@@ -15,28 +15,23 @@ import com.android.cling.entity.ClingDeviceList
 import com.android.cling.listener.BrowseRegistryListener
 import com.android.cling.manager.IClingManager
 import com.android.cling.service.ClingUpnpService
-import com.android.cling.util.Utils
 import com.android.cling.util.Utils.isNull
 import org.fourthline.cling.android.AndroidUpnpService
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.meta.Device
-import org.fourthline.cling.model.meta.RemoteDevice
-import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.model.types.ServiceType
-import org.fourthline.cling.model.types.UDADeviceType
 import org.fourthline.cling.model.types.UDAServiceType
 import org.fourthline.cling.registry.Registry
 import org.fourthline.cling.registry.RegistryListener
 
-class DLNAManager private constructor() : IClingManager {
+class ClingDLNAManager private constructor() : IClingManager {
     private var mUpnpService: AndroidUpnpService? = null
     private val mBrowseRegistryListener = BrowseRegistryListener()  //设备监听
     private val currentDevices = MutableLiveData<MutableList<ClingDevice>>()  //当前链接的设备
     private val currentSelectDevices = MutableLiveData<ClingDevice?>()  //当前链接的设备
     private var referer: String? = null
 
-
-    private val isInit: Boolean
+    val isInit: Boolean
         get() = !isNull(mUpnpService)
 
     override fun searchDevices() {
@@ -56,26 +51,6 @@ class DLNAManager private constructor() : IClingManager {
     internal fun updateCurrentDevices(devices: MutableList<ClingDevice>) {
         currentDevices.postValue(devices)
     }
-
-
-    override val dmrDevices: Collection<ClingDevice>?
-        get() {
-            if (isNull(mUpnpService)) {
-                return null
-            }
-            val devices = registry!!.getDevices(DMR_DEVICE_TYPE)
-            if (Utils.isEmpty(devices)) {
-                return null
-            }
-            val clingDevices: MutableCollection<ClingDevice> = ArrayList()
-            for (device in devices) {
-                if (device is RemoteDevice) {
-                    val clingDevice = ClingDevice(device)
-                    clingDevices.add(clingDevice)
-                }
-            }
-            return clingDevices
-        }
 
     override val controlPoint: ControlPoint?
         get() {
@@ -185,7 +160,7 @@ class DLNAManager private constructor() : IClingManager {
     }
 
     fun disconnectDevice(device: Device<*, *, *>) {
-        (deviceControlMap[device] as? CastControlImpl)?.released = true
+        (deviceControlMap[device] as? CastControlImpl)?.release()
         deviceControlMap[device] = null
     }
 
@@ -195,14 +170,12 @@ class DLNAManager private constructor() : IClingManager {
         internal val RENDERING_CONTROL_SERVICE: ServiceType = UDAServiceType("RenderingControl")
         internal val SERVICE_CONNECTION_MANAGER: ServiceType = UDAServiceType("ConnectionManager")
         internal val SERVICE_TYPE_CONTENT_DIRECTORY: ServiceType = UDAServiceType("ContentDirectory")
-
-        internal val DMR_DEVICE_TYPE: DeviceType = UDADeviceType("MediaRenderer")
-        private var INSTANCE: DLNAManager? = null
+        private var INSTANCE: ClingDLNAManager? = null
 
         @Synchronized
-        fun getInstant(): DLNAManager {
+        fun getInstant(): ClingDLNAManager {
             if (INSTANCE == null) {
-                INSTANCE = DLNAManager()
+                INSTANCE = ClingDLNAManager()
             }
             return INSTANCE!!
         }

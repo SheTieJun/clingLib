@@ -1,18 +1,17 @@
 package com.android.cling.control
 
+import androidx.lifecycle.MutableLiveData
 import com.android.cling.entity.ClingPlayType
 import org.fourthline.cling.model.meta.Device
-import org.fourthline.cling.support.avtransport.lastchange.AVTransportVariable.TransportState
 import org.fourthline.cling.support.lastchange.EventedValue
 import org.fourthline.cling.support.model.BrowseFlag
 import org.fourthline.cling.support.model.DIDLContent
 import org.fourthline.cling.support.model.MediaInfo
 import org.fourthline.cling.support.model.PositionInfo
 import org.fourthline.cling.support.model.TransportInfo
-import org.fourthline.cling.support.renderingcontrol.lastchange.EventedValueChannelMute
-import org.fourthline.cling.support.renderingcontrol.lastchange.EventedValueChannelVolume
+import org.fourthline.cling.support.model.TransportState
 
-interface DeviceControl : AvTransportServiceAction, RendererServiceAction, ContentServiceAction
+interface DeviceControl : AvTransportServiceAction, RendererServiceAction, ContentServiceAction,LiveDateAction
 
 object EmptyDeviceControl : DeviceControl {
     override fun setAVTransportURI(uri: String, title: String,type: ClingPlayType, callback: ServiceActionCallback<Unit>?) {}
@@ -32,22 +31,15 @@ object EmptyDeviceControl : DeviceControl {
     override fun getMute(callback: ServiceActionCallback<Boolean>?) {}
     override fun browse(objectId: String, flag: BrowseFlag, filter: String, firstResult: Int, maxResults: Int, callback: ServiceActionCallback<DIDLContent>?) {}
     override fun search(containerId: String, searchCriteria: String, filter: String, firstResult: Int, maxResults: Int, callback: ServiceActionCallback<DIDLContent>?) {}
+    override fun getCurrentState(): MutableLiveData<TransportState> = MutableLiveData()
+    override fun getCurrentVolume(): MutableLiveData<Int> = MutableLiveData()
+    override fun getCurrentMute(): MutableLiveData<Boolean> = MutableLiveData()
+    override fun getCurrentPositionInfo(): MutableLiveData<PositionInfo> = MutableLiveData()
 }
 
 interface OnDeviceControlListener {
     fun onConnected(device: Device<*, *, *>) {}
     fun onDisconnected(device: Device<*, *, *>) {}
-    fun onEventChanged(event: EventedValue<*>) {
-        when (event) {
-            is TransportState -> onAvTransportStateChanged(event.value)
-            is EventedValueChannelVolume -> onRendererVolumeChanged(event.value.volume)
-            is EventedValueChannelMute -> onRendererVolumeMuteChanged(event.value.mute)
-        }
-    }
-
-    fun onAvTransportStateChanged(state: org.fourthline.cling.support.model.TransportState) {}
-    fun onRendererVolumeChanged(volume: Int) {}
-    fun onRendererVolumeMuteChanged(mute: Boolean) {}
 }
 
 internal interface SubscriptionListener {

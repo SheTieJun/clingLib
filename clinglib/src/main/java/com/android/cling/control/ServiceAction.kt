@@ -1,11 +1,13 @@
 package com.android.cling.control
 
+import androidx.lifecycle.MutableLiveData
 import com.android.cling.entity.ClingPlayType
 import org.fourthline.cling.support.model.BrowseFlag
 import org.fourthline.cling.support.model.DIDLContent
 import org.fourthline.cling.support.model.MediaInfo
 import org.fourthline.cling.support.model.PositionInfo
 import org.fourthline.cling.support.model.TransportInfo
+import org.fourthline.cling.support.model.TransportState
 
 interface ServiceActionCallback<T> {
     fun onSuccess(result: T)
@@ -35,6 +37,14 @@ interface AvTransportServiceAction {
     fun getPositionInfo(callback: ServiceActionCallback<PositionInfo>?)
     fun getMediaInfo(callback: ServiceActionCallback<MediaInfo>?)
     fun getTransportInfo(callback: ServiceActionCallback<TransportInfo>?)
+
+}
+
+interface LiveDateAction  {
+    fun getCurrentState(): MutableLiveData<TransportState>
+    fun getCurrentVolume(): MutableLiveData<Int>
+    fun getCurrentMute(): MutableLiveData<Boolean>
+    fun getCurrentPositionInfo(): MutableLiveData<PositionInfo>
 }
 
 // --------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 package com.android.cling.entity
 
-import com.android.cling.DLNAManager
+import com.android.cling.ClingDLNAManager
 import org.fourthline.cling.model.meta.Device
 
 internal object ClingDeviceList   {
@@ -44,7 +44,7 @@ internal object ClingDeviceList   {
 
     fun clear(){
         mClingDeviceList.clear()
-        DLNAManager.getInstant().updateCurrentDevices(mClingDeviceList)
+        ClingDLNAManager.getInstant().updateCurrentDevices(mClingDeviceList)
     }
 
 }

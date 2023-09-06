@@ -1,19 +1,25 @@
 package com.android.cling.control
 
+import androidx.lifecycle.MutableLiveData
 import com.android.cling.control.BaseServiceExecutor.AVServiceExecutorImpl
 import com.android.cling.control.BaseServiceExecutor.ContentServiceExecutorImpl
 import com.android.cling.control.BaseServiceExecutor.RendererServiceExecutorImpl
-import com.android.cling.DLNAManager
+import com.android.cling.ClingDLNAManager
 import com.android.cling.entity.ClingPlayType
+import com.android.cling.util.CircleMessageHandler
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.meta.Device
 import org.fourthline.cling.support.avtransport.lastchange.AVTransportLastChangeParser
+import org.fourthline.cling.support.avtransport.lastchange.AVTransportVariable
 import org.fourthline.cling.support.lastchange.EventedValue
 import org.fourthline.cling.support.model.BrowseFlag
 import org.fourthline.cling.support.model.DIDLContent
 import org.fourthline.cling.support.model.MediaInfo
 import org.fourthline.cling.support.model.PositionInfo
 import org.fourthline.cling.support.model.TransportInfo
+import org.fourthline.cling.support.model.TransportState
+import org.fourthline.cling.support.renderingcontrol.lastchange.EventedValueChannelMute
+import org.fourthline.cling.support.renderingcontrol.lastchange.EventedValueChannelVolume
 import org.fourthline.cling.support.renderingcontrol.lastchange.RenderingControlLastChangeParser
 
 class CastControlImpl(
@@ -25,10 +31,30 @@ class CastControlImpl(
     private val avTransportService: AVServiceExecutorImpl
     private val renderService: RendererServiceExecutorImpl
     private val contentService: ContentServiceExecutorImpl
-    var released = false
+    private val currentState = MutableLiveData<TransportState>()
+    private val currentVolume = MutableLiveData<Int>()
+    private val currentMute = MutableLiveData<Boolean>()
+    private val currentPositionInfo = MutableLiveData<PositionInfo>()
+    private val positionHandler = CircleMessageHandler(800) {
+        getPositionInfo(object : ServiceActionCallback<PositionInfo> {
+            override fun onSuccess(result: PositionInfo) {
+                currentPositionInfo.postValue(result)
+            }
+
+            override fun onFailure(msg: String) {
+                currentPositionInfo.postValue(PositionInfo())
+            }
+        })
+    }
+    private var released = false
+
+    fun release() {
+        released = true
+        positionHandler.stop()
+    }
 
     init {
-        avTransportService = AVServiceExecutorImpl(controlPoint, device.findService(DLNAManager.AV_TRANSPORT_SERVICE))
+        avTransportService = AVServiceExecutorImpl(controlPoint, device.findService(ClingDLNAManager.AV_TRANSPORT_SERVICE))
         avTransportService.subscribe(object : SubscriptionListener {
             override fun failed(subscriptionId: String?) {
                 if (!released) listener.onDisconnected(device)
@@ -43,14 +69,54 @@ class CastControlImpl(
             }
 
             override fun onReceived(subscriptionId: String?, event: EventedValue<*>) {
-                if (!released) listener.onEventChanged(event)
+                if (!released){
+                    when (event) {
+                        is AVTransportVariable.TransportState -> {
+                            currentState.postValue(event.value)
+                        }
+                        is EventedValueChannelVolume -> {
+                            currentVolume.postValue(event.value.volume)
+                        }
+                        is EventedValueChannelMute -> {
+                            currentMute.postValue(event.value.mute)
+                        }
+                    }
+                }
             }
         }, AVTransportLastChangeParser())
-        renderService = RendererServiceExecutorImpl(controlPoint, device.findService(DLNAManager.RENDERING_CONTROL_SERVICE))
+        renderService = RendererServiceExecutorImpl(controlPoint, device.findService(ClingDLNAManager.RENDERING_CONTROL_SERVICE))
         renderService.subscribe(object : SubscriptionListener {}, RenderingControlLastChangeParser())
-        contentService = ContentServiceExecutorImpl(controlPoint, device.findService(DLNAManager.SERVICE_TYPE_CONTENT_DIRECTORY))
-        //TODO: check the parser
+        contentService = ContentServiceExecutorImpl(controlPoint, device.findService(ClingDLNAManager.SERVICE_TYPE_CONTENT_DIRECTORY))
         contentService.subscribe(object : SubscriptionListener {}, AVTransportLastChangeParser())
+    }
+
+    override fun getCurrentState(): MutableLiveData<TransportState> {
+        return currentState
+    }
+
+    override fun getCurrentVolume(): MutableLiveData<Int> {
+        return currentVolume
+    }
+
+    override fun getCurrentMute(): MutableLiveData<Boolean> {
+        return currentMute
+    }
+
+    override fun getCurrentPositionInfo(): MutableLiveData<PositionInfo> {
+        if (!released){
+            startLoopGetPositionInfo()
+        }
+        return currentPositionInfo
+    }
+
+    fun startLoopGetPositionInfo(){
+        if (!positionHandler.isStart()){
+            positionHandler.start()
+        }
+    }
+
+    fun stopGetPositionInfo(){
+        positionHandler.stop()
     }
 
     // --------------------------------------------------------

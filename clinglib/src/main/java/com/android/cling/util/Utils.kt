@@ -1,5 +1,8 @@
 package com.android.cling.util
 
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import java.util.*
 
 internal object Utils {
@@ -50,5 +53,31 @@ internal object Utils {
 
     fun isEmpty(list: Collection<*>?): Boolean {
         return !(list != null && list.isNotEmpty())
+    }
+}
+
+
+internal class CircleMessageHandler(
+    private val duration: Long,
+    private val runnable: Runnable,
+) : Handler(Looper.getMainLooper()) {
+    override fun handleMessage(msg: Message) {
+        runnable.run()
+        sendEmptyMessageDelayed(MSG, duration)
+    }
+
+    fun start(delay: Long = 0L) {
+        stop()
+        sendEmptyMessageDelayed(MSG, delay)
+    }
+
+    fun isStart() = hasMessages(MSG)
+
+    fun stop() {
+        removeMessages(MSG)
+    }
+
+    companion object {
+        private const val MSG = 101
     }
 }

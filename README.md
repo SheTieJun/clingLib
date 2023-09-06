@@ -2,7 +2,7 @@
 
 功能：Android DLNA投屏
 
-**暂时有很多问题**
+建议使用这位**devin1014**的[DLNA-Cast](https://github.com/devin1014/DLNA-Cast)
 
 ### 注意事项
 
@@ -33,7 +33,6 @@ allprojects {
 
 - `cling` 2.1.2 搜索设备有问题，暂时不要用
 - 可能存在`slf4j-simple`重复： `exclude group: 'org.slf4j', module: 'slf4j-simple'`
-- **暂时有很多问题**
 
 ### 使用方法
 
@@ -52,19 +51,34 @@ stopUpnpService(mUpnpServiceConnection)
 #### 3. 搜索设备
 
 ```kotlin
-ClingManager.getInstant().searchDevices()  //默认启动服务后会自动搜索一次
-ClingManager.getInstant().getCurSearchDevices().observe(this) {
+ClingDLNAManager.getInstant().searchDevices()  //默认启动服务后会自动搜索一次
+ClingDLNAManager.getInstant().getCurSearchDevices().observe(this) {
     mAdapter.setList(it)  //展示搜索结果
 }
 ```
-
+#### 4. 投屏相关
+1. 连接
+```kotlin
+   control = ClingDLNAManager.getInstant().connectDevice(this, object : OnDeviceControlListener { })
+```
+```kotlin
+control.setAVTransportURI(uri , title,type, callback)
+control.setNextAVTransportURI(uri, title, callback)
+control.play(speed = "1", callback)
+control.pause(callback)
+control.stop(callback)
+control.seek(millSeconds, callback)
+control.next(callback)
+control.canNext(callback) {
+control.callback?.onSuccess(false)
+control.previous(callback)
+control.canPrevious(callback) {
+control.callback?.onSuccess(false)
+control.getPositionInfo(callback)
+control.getMediaInfo(callback)
+control.getTransportInfo(callback)
+```
  
 
 ### Tips
-
-
-## 关于[cling](https://github.com/4thline/cling)
-
-该项目基于https://github.com/4thline/cling 的工作,不幸的是，该项目进入了 EOL 状态。
-
-所以有些功能我也不一定能加
+未测试

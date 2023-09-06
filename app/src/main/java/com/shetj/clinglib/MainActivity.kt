@@ -4,7 +4,7 @@ import android.content.*
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.android.cling.DLNAManager
+import com.android.cling.ClingDLNAManager
 import com.android.cling.control.DeviceControl
 import com.android.cling.control.OnDeviceControlListener
 import com.android.cling.control.ServiceActionCallback
@@ -42,6 +42,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         initData()
     }
 
+
     fun initView() {
         mBinding.startScreen.setOnClickListener {
             val url = "https://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
@@ -68,7 +69,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
             })
         }
         mBinding.search.setOnClickListener {
-            DLNAManager.getInstant().searchDevices()
+            "开始搜索...".showToast()
+            ClingDLNAManager.getInstant().searchDevices()
         }
         showRecycleView()
     }
@@ -81,8 +83,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
     private fun bindServices() { // Bind UPnP service
         mUpnpServiceConnection = startBindUpnpService {
             Log.i("Cling", "startBindUpnpService OK")
-            Log.i("Cling", DLNAManager.getInstant().dmrDevices.toJson().toString())
-
         }
     }
 
@@ -90,7 +90,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         mAdapter = DeviceAdapter().apply {
             setOnItemClickListener { _, _, position ->
                 getItem(position).apply {
-                    control = DLNAManager.getInstant().connectDevice(this, object : OnDeviceControlListener {
+                    control = ClingDLNAManager.getInstant().connectDevice(this, object : OnDeviceControlListener {
                         override fun onConnected(device: Device<*, *, *>) {
                             super.onConnected(device)
                             Toast.makeText(this@MainActivity, "连接成功", Toast.LENGTH_SHORT).show()
@@ -100,8 +100,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
                             super.onDisconnected(device)
                             Toast.makeText(this@MainActivity, "无法连接: ${device.details.friendlyName}", Toast.LENGTH_SHORT).show()
                         }
-
                     })
+                    control?.addControlObservers()
                     setPlay(position)
                     mBinding.tvMsg.text = "您选择了：${this.name}"
                 }
@@ -109,8 +109,27 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         }
         mBinding.iRecyclerView.adapter = mAdapter
         mBinding.iRecyclerView.addItemDecoration(MaterialDividerItemDecoration(this, MaterialDividerItemDecoration.VERTICAL))
-        DLNAManager.getInstant().getSearchDevices().observe(this) {
+        ClingDLNAManager.getInstant().getSearchDevices().observe(this) {
             mAdapter.setList(it)
+        }
+    }
+
+    /**
+     * Add control observers
+     * 监听control的状态
+     */
+    private fun DeviceControl.addControlObservers() {
+        getCurrentState().observe(this@MainActivity) {
+            mBinding.playState.text = "当前状态：$it"
+        }
+        getCurrentPositionInfo().observe(this@MainActivity){
+            mBinding.playPosition.text = "当前进度：${it.toJson()}"
+        }
+        getCurrentVolume().observe(this@MainActivity){
+            mBinding.playVolume.text = "当前音量：$it"
+        }
+        getCurrentMute().observe(this@MainActivity) {
+            mBinding.playVolume.text = "当前静音：$it"
         }
     }
 
@@ -118,6 +137,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
     override fun onDestroy() {
         super.onDestroy()
         stopUpnpService(mUpnpServiceConnection)
-        DLNAManager.getInstant().destroy()
+        ClingDLNAManager.getInstant().destroy()
     }
 }
