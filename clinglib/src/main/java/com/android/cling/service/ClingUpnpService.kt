@@ -46,7 +46,7 @@ class ClingUpnpService : AndroidUpnpServiceImpl() {
                 SERVICE_TYPE_CONTENT_DIRECTORY
             )
 
-            override fun getDescriptorRetrievalHeaders(identity: RemoteDeviceIdentity?): UpnpHeaders {
+            override fun getDescriptorRetrievalHeaders(identity: RemoteDeviceIdentity?): UpnpHeaders? {
                 if ( ClingDLNAManager.getInstant().getReferer() == null) return super.getDescriptorRetrievalHeaders(identity)
                 //fix 用于一些播放链接有防盗链的情况，需要设置referer
                 val headers = UpnpHeaders()
