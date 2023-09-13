@@ -15,7 +15,7 @@ interface DeviceControl : AvTransportServiceAction, RendererServiceAction, Conte
 
 object EmptyDeviceControl : DeviceControl {
     override fun setAVTransportURI(uri: String, title: String,type: ClingPlayType, callback: ServiceActionCallback<Unit>?) {}
-    override fun setNextAVTransportURI(uri: String, title: String, callback: ServiceActionCallback<Unit>?) {}
+    override fun setNextAVTransportURI(uri: String, title: String, type: ClingPlayType,callback: ServiceActionCallback<Unit>?) {}
     override fun play(speed: String, callback: ServiceActionCallback<Unit>?) {}
     override fun pause(callback: ServiceActionCallback<Unit>?) {}
     override fun stop(callback: ServiceActionCallback<Unit>?) {}

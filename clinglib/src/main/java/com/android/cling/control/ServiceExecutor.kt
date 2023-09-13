@@ -141,13 +141,13 @@ internal abstract class BaseServiceExecutor(
             })
         }
 
-        override fun setNextAVTransportURI(uri: String, title: String, callback: ServiceActionCallback<Unit>?) {
+        override fun setNextAVTransportURI(uri: String, title: String,type: ClingPlayType,  callback: ServiceActionCallback<Unit>?) {
             logger.info("${Actions.SetNextAVTransportURI}: $title, $uri")
             if (invalidServiceAction(Actions.SetNextAVTransportURI)) {
                 notifyFailure(callback)
                 return
             }
-            val metadata = MetadataUtils.create(uri, title)
+            val metadata = pushMediaToRender(uri, "-1", title, type)
             logger.info("${Actions.SetNextAVTransportURI}: $metadata")
             executeAction(object : SetNextAVTransportURI(service = service, uri = uri, metadata = metadata) {
                 override fun success(invocation: ActionInvocation<*>?) {

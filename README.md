@@ -33,6 +33,7 @@ allprojects {
 
 - `cling` 2.1.2 搜索设备有问题，暂时不要用
 - 可能存在`slf4j-simple`重复： `exclude group: 'org.slf4j', module: 'slf4j-simple'`
+- 【有些电视不会自动播放】：调用`setAVTransportURI`投屏后还要调用掉一次play才能播放 
 
 ### 使用方法
 
@@ -78,7 +79,3 @@ control.getPositionInfo(callback)
 control.getMediaInfo(callback)
 control.getTransportInfo(callback)
 ```
- 
-
-### Tips
-未测试

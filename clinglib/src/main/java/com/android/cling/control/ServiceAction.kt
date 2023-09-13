@@ -19,7 +19,7 @@ interface ServiceActionCallback<T> {
 // --------------------------------------------------------------------------------
 interface AvTransportServiceAction {
     fun setAVTransportURI(uri: String, title: String,type: ClingPlayType, callback: ServiceActionCallback<Unit>? = null)
-    fun setNextAVTransportURI(uri: String, title: String, callback: ServiceActionCallback<Unit>? = null)
+    fun setNextAVTransportURI(uri: String, title: String,type: ClingPlayType, callback: ServiceActionCallback<Unit>? = null)
     fun play(speed: String = "1", callback: ServiceActionCallback<Unit>? = null)
     fun pause(callback: ServiceActionCallback<Unit>? = null)
     fun stop(callback: ServiceActionCallback<Unit>? = null)

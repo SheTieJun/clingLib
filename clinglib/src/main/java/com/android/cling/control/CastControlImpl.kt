@@ -127,8 +127,8 @@ class CastControlImpl(
         avTransportService.setAVTransportURI(uri, title, type,callback)
     }
 
-    override fun setNextAVTransportURI(uri: String, title: String, callback: ServiceActionCallback<Unit>?) {
-        avTransportService.setNextAVTransportURI(uri, title, callback)
+    override fun setNextAVTransportURI(uri: String, title: String,type: ClingPlayType, callback: ServiceActionCallback<Unit>?) {
+        avTransportService.setNextAVTransportURI(uri, title, type,callback)
     }
 
     override fun play(speed: String, callback: ServiceActionCallback<Unit>?) {

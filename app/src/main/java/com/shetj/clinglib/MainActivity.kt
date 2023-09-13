@@ -49,6 +49,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
             control?.setAVTransportURI(url,"直播视频介绍", ClingPlayType.TYPE_VIDEO, object : ServiceActionCallback<Unit> {
                 override fun onSuccess(result: Unit) {
                     "投放成功".showToast()
+                    control?.play() //有些还要重新调用一次播放
                 }
 
                 override fun onFailure(msg: String) {
