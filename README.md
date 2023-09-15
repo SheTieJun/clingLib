@@ -4,6 +4,11 @@
 
 建议使用这位**devin1014**的[DLNA-Cast](https://github.com/devin1014/DLNA-Cast)
 
+
+## 已实现
+1. 基础投屏功能
+2. 本地资源投屏
+
 ### 注意事项
 
 ```groovy
@@ -31,9 +36,12 @@ allprojects {
 }
 ```
 
-- `cling` 2.1.2 搜索设备有问题，暂时不要用
-- 可能存在`slf4j-simple`重复： `exclude group: 'org.slf4j', module: 'slf4j-simple'`
-- 【有些电视不会自动播放】：调用`setAVTransportURI`投屏后还要调用掉一次play才能播放 
+### 遇到的问题：
+- 设备搜索问题：`cling` 2.1.2 搜索设备有问题，暂时不要用，用2.1.1
+- 集成过程中：可能存在`slf4j-simple`重复： `exclude group: 'org.slf4j', module: 'slf4j-simple'`
+- 投屏成功没有播放：【有些电视不会自动播放】：调用`setAVTransportURI`投屏后还要调用掉一次play才能播放 
+- 构建本地服务器只能是http: 需要修改`network_security_config.xml`中的`<base-config cleartextTrafficPermitted="true">`
+- 暂时不支持REFRE，项目有代码尝试，但是没有测试
 
 ### 使用方法
 
@@ -78,4 +86,50 @@ control.callback?.onSuccess(false)
 control.getPositionInfo(callback)
 control.getMediaInfo(callback)
 control.getTransportInfo(callback)
+```
+
+#### 5. 本地资源投屏
+1. 启动本地服务器
+```Kotlin
+    ClingDLNAManager.startLocalFileService(this)
+```
+2. 选择文件构建本地url
+``` 
+    val url = ClingDLNAManager.getBaseUrl(this) + 本地路径
+```
+案例如下
+```Kotlin
+
+val builder = Builder().apply {
+    when (type) {
+        ClingPlayType.TYPE_VIDEO -> {
+            setMediaType(VideoOnly)
+        }
+        ClingPlayType.TYPE_IMAGE -> {
+            setMediaType(ImageOnly)
+        }
+        else -> {
+            return
+        }
+    }
+}
+     pickVisualMedia(inputType = builder.build()) {
+                if (it == null) return@pickVisualMedia
+                val url = ClingDLNAManager.getBaseUrl(this) + FileQUtils.getFileAbsolutePath(this, it)
+                control?.setAVTransportURI(url,title, type, object : ServiceActionCallback<Unit> {
+                    override fun onSuccess(result: Unit) {
+                        "投放成功".showToast()
+                        control?.play() //有些还要重新调用一次播放
+                    }
+
+                    override fun onFailure(msg: String) {
+                        "投放失败:$msg".showToast()
+                    }
+                })
+            }
+
+```
+3. 关闭服务
+```kotlin
+   ClingDLNAManager.stopLocalFileService(this)
 ```

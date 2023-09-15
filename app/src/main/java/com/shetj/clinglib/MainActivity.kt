@@ -1,9 +1,15 @@
 package com.shetj.clinglib
 
+import android.Manifest.permission
 import android.content.*
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest.Builder
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageOnly
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.VideoOnly
 import com.android.cling.ClingDLNAManager
 import com.android.cling.control.DeviceControl
 import com.android.cling.control.OnDeviceControlListener
@@ -13,11 +19,16 @@ import com.android.cling.startBindUpnpService
 import com.android.cling.stopUpnpService
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.shetj.clinglib.databinding.ActivityMainBinding
+import me.shetj.base.ktx.hasPermission
+import me.shetj.base.ktx.launch
+import me.shetj.base.ktx.loadImage
+import me.shetj.base.ktx.pickVisualMedia
 import me.shetj.base.ktx.setAppearance
 import me.shetj.base.ktx.showToast
 import me.shetj.base.ktx.toJson
 import me.shetj.base.mvvm.viewbind.BaseBindingActivity
 import me.shetj.base.mvvm.viewbind.BaseViewModel
+import me.shetj.base.network_coroutine.KCHttpV2
 import me.shetj.base.tools.app.Tim
 import org.fourthline.cling.model.meta.Device
 
@@ -45,6 +56,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
 
     fun initView() {
         mBinding.startScreen.setOnClickListener {
+            if (control == null){
+                "请先选择设备".showToast()
+                return@setOnClickListener
+            }
             val url = "https://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
             control?.setAVTransportURI(url,"直播视频介绍", ClingPlayType.TYPE_VIDEO, object : ServiceActionCallback<Unit> {
                 override fun onSuccess(result: Unit) {
@@ -59,6 +74,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         }
 
         mBinding.stopScreen.setOnClickListener {
+            if (control == null){
+                "请先选择设备".showToast()
+                return@setOnClickListener
+            }
             control?.stop(object : ServiceActionCallback<Unit> {
                 override fun onSuccess(result: Unit) {
                     "停止成功".showToast()
@@ -78,6 +97,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
 
     private fun initData() {
         bindServices()
+        ClingDLNAManager.startLocalFileService(this)
     }
 
 
@@ -134,9 +154,60 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         }
     }
 
+    override fun setUpClicks() {
+        super.setUpClicks()
+        mBinding.localVideo.setOnClickListener {
+            choiceLocalVideoAndImage("视频",ClingPlayType.TYPE_VIDEO)
+        }
+    }
+
+
+    private fun choiceLocalVideoAndImage(title: String, type: ClingPlayType) {
+        if (control == null){
+            "请先选择设备".showToast()
+            return
+        }
+        val hasPermission = if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            hasPermission(permission.READ_MEDIA_VIDEO, permission.READ_MEDIA_IMAGES, isRequest = true)
+        } else {
+            hasPermission(permission.READ_EXTERNAL_STORAGE, isRequest = true)
+        }
+        if (hasPermission) {
+            val builder = Builder().apply {
+                when (type) {
+                    ClingPlayType.TYPE_VIDEO -> {
+                        setMediaType(VideoOnly)
+                    }
+                    ClingPlayType.TYPE_IMAGE -> {
+                        setMediaType(ImageOnly)
+                    }
+                    else -> {
+                        return
+                    }
+                }
+            }
+            pickVisualMedia(inputType = builder.build()) {
+                if (it == null) return@pickVisualMedia
+                val url = ClingDLNAManager.getBaseUrl(this) + FileQUtils.getFileAbsolutePath(this, it)
+                control?.setAVTransportURI(url,title, type, object : ServiceActionCallback<Unit> {
+                    override fun onSuccess(result: Unit) {
+                        "投放成功".showToast()
+                        control?.play() //有些还要重新调用一次播放
+                    }
+
+                    override fun onFailure(msg: String) {
+                        "投放失败:$msg".showToast()
+                    }
+                })
+            }
+        }
+    }
+
+
 
     override fun onDestroy() {
         super.onDestroy()
+        ClingDLNAManager.stopLocalFileService(this)
         stopUpnpService(mUpnpServiceConnection)
         ClingDLNAManager.getInstant().destroy()
     }

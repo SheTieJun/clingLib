@@ -1,11 +1,21 @@
 package com.android.cling.util
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import java.util.*
 
 internal object Utils {
+
+
+    const val PORT_LISTEN_DEFAULT = 5050
+    const val HTTP_SERVLET_KEY = "localeFile"
+
     @JvmStatic
     fun isNull(obj: Any?): Boolean {
         return obj == null
@@ -53,6 +63,29 @@ internal object Utils {
 
     fun isEmpty(list: Collection<*>?): Boolean {
         return !(list != null && list.isNotEmpty())
+    }
+
+    fun getWiFiIpAddress(context: Context): String {
+        var ipAddress = 0
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            ipAddress = wifiManager.connectionInfo.ipAddress
+        } else {
+            val connectivityManager = context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            connectivityManager.run {
+                activeNetwork?.let { network ->
+                    (getNetworkCapabilities(network)?.transportInfo as? WifiInfo)?.let { wifiInfo ->
+                        ipAddress = wifiInfo.ipAddress
+                    }
+                }
+            }
+        }
+        if (ipAddress == 0) return "127.0.0.1"
+        return (ipAddress and 0xFF).toString() + "." + (ipAddress shr 8 and 0xFF) + "." + (ipAddress shr 16 and 0xFF) + "." + (ipAddress shr 24 and 0xFF)
+    }
+
+    fun getBaseUrl(context: Context): String {
+        return "http://"+getWiFiIpAddress(context)+":"+PORT_LISTEN_DEFAULT+"/$HTTP_SERVLET_KEY/"
     }
 }
 

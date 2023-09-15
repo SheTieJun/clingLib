@@ -15,6 +15,8 @@ import com.android.cling.entity.ClingDeviceList
 import com.android.cling.listener.BrowseRegistryListener
 import com.android.cling.manager.IClingManager
 import com.android.cling.service.ClingUpnpService
+import com.android.cling.service.LocalFileService
+import com.android.cling.util.Utils
 import com.android.cling.util.Utils.isNull
 import org.fourthline.cling.android.AndroidUpnpService
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -189,6 +191,17 @@ class ClingDLNAManager private constructor() : IClingManager {
             getInstant().setReferer(referer)
         }
 
+        fun getBaseUrl(context: Context): String {
+            return Utils.getBaseUrl(context)
+        }
+
+        fun startLocalFileService(context: Context){
+            context.startService(Intent(context,LocalFileService::class.java))
+        }
+
+        fun stopLocalFileService(context: Context){
+            context.stopService(Intent(context,LocalFileService::class.java))
+        }
     }
 
 }
