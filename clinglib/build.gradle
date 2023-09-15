@@ -36,8 +36,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // Cling library 只能使用2.1.1 ，当2.1.2时无法搜索到设备
-    api 'org.fourthline.cling:cling-core:2.1.2'
-    api 'org.fourthline.cling:cling-support:2.1.2'
+    api 'org.fourthline.cling:cling-core:2.1.1'
+    api 'org.fourthline.cling:cling-support:2.1.1'
     // Jetty library
     api 'org.eclipse.jetty:jetty-server:8.1.22.v20160922'
     api 'org.eclipse.jetty:jetty-servlet:8.1.22.v20160922'
