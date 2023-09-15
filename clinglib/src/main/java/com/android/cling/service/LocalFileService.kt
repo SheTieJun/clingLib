@@ -33,7 +33,6 @@ class LocalFileService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.i("LocalFileService","createServer")
         createServer()
     }
 
@@ -43,7 +42,7 @@ class LocalFileService : Service() {
             val contextHandler = ServletContextHandler(ServletContextHandler.SESSIONS)
             contextHandler.contextPath = "/"
             server.handler = contextHandler
-            // http://localhost:8080/localeFile/xxx.txt
+            // http://localhost:8080/clingLocaleFile/xxx.txt
             contextHandler.addServlet(ServletHolder(FileServlet()), "/$HTTP_SERVLET_KEY/*")
             server.start()
             server.join()
@@ -57,7 +56,6 @@ class LocalFileService : Service() {
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i("LocalFileService","onStartCommand")
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -66,7 +64,6 @@ class LocalFileService : Service() {
         @Throws(IOException::class)
         override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
             try {
-                Log.i("LocalFileService","request.pathInfo = ${request.pathInfo}")
                 val filePath = request.pathInfo.substring(1)
                 val file = File(filePath)
                 if (file.exists() && file.isFile) {
@@ -91,23 +88,11 @@ class LocalFileService : Service() {
         }
     }
 
-    override fun unbindService(conn: ServiceConnection) {
-        super.unbindService(conn)
-
-    }
-
-    override fun bindService(service: Intent, conn: ServiceConnection, flags: Int): Boolean {
-        return super.bindService(service, conn, flags)
-    }
-
-    override fun stopService(name: Intent?): Boolean {
-        Log.i("LocalFileService","stopService")
-        server.stop()
-        return super.stopService(name)
-    }
-
     override fun onDestroy() {
-        server.destroy()
+        kotlin.runCatching {
+            server.stop()
+            server.destroy()
+        }
         super.onDestroy()
     }
 }

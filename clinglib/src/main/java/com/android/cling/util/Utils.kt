@@ -14,7 +14,7 @@ internal object Utils {
 
 
     const val PORT_LISTEN_DEFAULT = 5050
-    const val HTTP_SERVLET_KEY = "localeFile"
+    const val HTTP_SERVLET_KEY = "clingLocaleFile"
 
     @JvmStatic
     fun isNull(obj: Any?): Boolean {
