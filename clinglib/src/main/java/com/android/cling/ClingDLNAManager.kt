@@ -99,7 +99,9 @@ class ClingDLNAManager private constructor() : IClingManager {
 
 
     override fun destroy() {
-        registry?.listeners?.clear()
+        if (isInit) {
+            mUpnpService = null
+        }
     }
 
 

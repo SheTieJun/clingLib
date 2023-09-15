@@ -182,6 +182,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
                         setMediaType(ImageOnly)
                     }
                     else -> {
+                        Toast.makeText(this@MainActivity, "暂不支持", Toast.LENGTH_SHORT).show()
                         return
                     }
                 }
@@ -204,11 +205,17 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
     }
 
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
 
+
+    //没有执行~~~~~~~~~~~ 有问题
     override fun onDestroy() {
-        super.onDestroy()
         ClingDLNAManager.stopLocalFileService(this)
         stopUpnpService(mUpnpServiceConnection)
         ClingDLNAManager.getInstant().destroy()
+        super.onDestroy()
     }
 }

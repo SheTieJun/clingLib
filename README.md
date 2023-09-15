@@ -93,7 +93,7 @@ control.getTransportInfo(callback)
 ```Kotlin
     ClingDLNAManager.startLocalFileService(this)
 ```
-2. 选择文件构建本地url
+2. 选择文件构建本地url【注意权限的获取】
 ``` 
     val url = ClingDLNAManager.getBaseUrl(this) + 本地路径
 ```
