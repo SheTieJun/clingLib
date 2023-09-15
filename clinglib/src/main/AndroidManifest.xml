@@ -9,7 +9,6 @@
     <application>
         <service android:name=".service.ClingUpnpService" />
         <service
-            android:name=".service.LocalFileService"
-            android:process=":localService" />
+            android:name=".service.LocalFileService" />
     </application>
 </manifest>
