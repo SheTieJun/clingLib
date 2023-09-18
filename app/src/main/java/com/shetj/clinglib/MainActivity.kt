@@ -29,6 +29,7 @@ import me.shetj.base.ktx.toJson
 import me.shetj.base.mvvm.viewbind.BaseBindingActivity
 import me.shetj.base.mvvm.viewbind.BaseViewModel
 import me.shetj.base.network_coroutine.KCHttpV2
+import me.shetj.base.tools.app.NetworkUtils
 import me.shetj.base.tools.app.Tim
 import org.fourthline.cling.model.meta.Device
 
@@ -51,6 +52,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         setAppearance(true)
         initView()
         initData()
+        if (!NetworkUtils.isAvailable(this) ||! NetworkUtils.isWifiConnected(this)) {
+            "请先连接wifi".showToast()
+        }
     }
 
 
@@ -89,8 +93,30 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
             })
         }
         mBinding.search.setOnClickListener {
-            "开始搜索...".showToast()
-            ClingDLNAManager.getInstant().searchDevices()
+            if (NetworkUtils.isAvailable(this) && NetworkUtils.isWifiConnected(this)) {
+                "开始搜索...".showToast()
+                ClingDLNAManager.getInstant().searchDevices()
+            }else{
+                "请先连接wifi".showToast()
+            }
+        }
+
+        mBinding.localService.setOnClickListener {
+            val hasPermission = if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                hasPermission(permission.READ_MEDIA_VIDEO, permission.READ_MEDIA_IMAGES, isRequest = true)
+            } else {
+                hasPermission(permission.READ_EXTERNAL_STORAGE, isRequest = true)
+            }
+            if (hasPermission) {
+                val builder = Builder().apply {
+                    setMediaType(VideoOnly)
+                }
+                pickVisualMedia(inputType = builder.build()) {
+                    if (it == null) return@pickVisualMedia
+                    val url = ClingDLNAManager.getBaseUrl(this) + FileQUtils.getFileAbsolutePath(this, it)
+                    PlayActivity.start(this,url)
+                }
+            }
         }
         showRecycleView()
     }
@@ -131,6 +157,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
         mBinding.iRecyclerView.adapter = mAdapter
         mBinding.iRecyclerView.addItemDecoration(MaterialDividerItemDecoration(this, MaterialDividerItemDecoration.VERTICAL))
         ClingDLNAManager.getInstant().getSearchDevices().observe(this) {
+            mBinding.toolbar.subtitle = Utils.getWiFiIpAddress(this)
             mAdapter.setList(it)
         }
     }

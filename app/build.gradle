@@ -47,4 +47,25 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation "com.github.SheTieJun:Base:4ad830925f"
     implementation project(path: ':clinglib')
+    def media3_version = "1.1.1"
+    // For media playback using ExoPlayer
+    implementation ("androidx.media3:media3-exoplayer:$media3_version")
+    // For DASH playback support with ExoPlayer
+    implementation ("androidx.media3:media3-exoplayer-dash:$media3_version")
+    // For HLS playback support with ExoPlayer
+    implementation ("androidx.media3:media3-exoplayer-hls:$media3_version")
+    // For RTSP playback support with ExoPlayer
+    implementation ("androidx.media3:media3-exoplayer-rtsp:$media3_version")
+
+    // For loading data using the Cronet network stack
+    implementation("androidx.media3:media3-datasource-cronet:$media3_version")
+    // For loading data using the OkHttp network stack
+    implementation("androidx.media3:media3-datasource-okhttp:$media3_version")
+    // For loading data using librtmp
+    implementation("androidx.media3:media3-datasource-rtmp:$media3_version")
+
+    // For building media playback UIs
+    implementation ("androidx.media3:media3-ui:$media3_version")
+    // For exposing and controlling media sessions
+    implementation ("androidx.media3:media3-session:$media3_version")
 }

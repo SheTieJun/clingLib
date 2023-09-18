@@ -60,6 +60,12 @@
             android:layout_height="wrap_content"
             android:text="本地视频"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/local_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试本地服务"/>
+
     </com.google.android.material.chip.ChipGroup>
 
 

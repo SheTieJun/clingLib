@@ -13,15 +13,15 @@ import android.os.Environment
 import android.os.FileUtils
 import android.provider.DocumentsContract
 import android.provider.MediaStore.Audio
+import android.provider.MediaStore.Images
 import android.provider.MediaStore.Images.ImageColumns
-import android.provider.MediaStore.Images.Media
 import android.provider.MediaStore.MediaColumns
 import android.provider.MediaStore.Video
+import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.random.Random
 import me.shetj.base.ktx.md5
 
 /**
@@ -34,8 +34,9 @@ object FileQUtils {
      *
      * @param context
      * @param uri
+     * @param filename10IsTemp 是否是临时文件
      */
-    fun getFileAbsolutePath(context: Context?, uri: Uri?): String? {
+    fun getFileAbsolutePath(context: Context?, uri: Uri?,filename10IsTemp:Boolean = true): String? {
         if (context == null || uri == null) {
             return null
         }
@@ -71,22 +72,24 @@ object FileQUtils {
                 var contentUri: Uri? = null
                 when (type) {
                     "image" -> {
-                        contentUri = Media.EXTERNAL_CONTENT_URI
+                        contentUri = Images.Media.EXTERNAL_CONTENT_URI
                     }
+
                     "video" -> {
                         contentUri = Video.Media.EXTERNAL_CONTENT_URI
                     }
+
                     "audio" -> {
                         contentUri = Audio.Media.EXTERNAL_CONTENT_URI
                     }
                 }
-                val selection = Media._ID + "=?"
+                val selection = MediaColumns._ID + "=?"
                 val selectionArgs = arrayOf(split[1])
                 return getDataColumn(context, contentUri, selection, selectionArgs)
             }
         } // MediaStore (and general)
         if (VERSION.SDK_INT >= VERSION_CODES.Q) {
-            return uriToFileApiQ(context, uri)
+            return uriToFileApiQ(context, uri,filename10IsTemp)
         } else if ("content".equals(uri.scheme, ignoreCase = true)) {
             // Return the remote address
             return if (isGooglePhotosUri(uri)) {
@@ -153,7 +156,7 @@ object FileQUtils {
         selectionArgs: Array<String>?
     ): String? {
         var cursor: Cursor? = null
-        val column = Media.DATA
+        val column = MediaColumns.DATA
         val projection = arrayOf(column)
         try {
             cursor = context.contentResolver.query(uri!!, projection, selection, selectionArgs, null)
@@ -221,25 +224,13 @@ object FileQUtils {
      * @return
      */
     @RequiresApi(api = VERSION_CODES.Q)
-    private fun uriToFileApiQ(context: Context, uri: Uri): String? {
+    private fun uriToFileApiQ(context: Context, uri: Uri, filename10IsTemp: Boolean): String? {
         return if (uri.scheme == ContentResolver.SCHEME_FILE)
             File(requireNotNull(uri.path)).path
         else if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
-            // 把文件保存到沙盒
-            val start = uri.path?.lastIndexOf(".") ?: -1
-            // 把文件保存到沙盒
+            // 把文件保存到沙盒,算是临时文件
             val contentResolver = context.contentResolver
-            val displayName = if (start > 0) {
-                // 因为存在部分文件的扩展名称获取错误，所以先用文件原有的扩展名称，在使用
-                "${uri.path.toString().md5}.${
-                     MimeTypeMap.getSingleton()
-                        .getExtensionFromMimeType(contentResolver.getType(uri))?:uri.path?.substring(start + 1)
-                }"
-            } else {
-                "${uri.toString().md5}.${
-                    MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri))
-                }"
-            }.replace("/", "_") //修复复制文件时，文件名中包含/导致的文件复制失败
+            val displayName = getFileName(context, uri,filename10IsTemp).replace("/", "_") //修复复制文件时，文件名中包含/导致的文件复制失败
             val ios = contentResolver.openInputStream(uri)
             if (ios != null) {
                 File("${context.cacheDir.absolutePath}/$displayName")
@@ -253,12 +244,36 @@ object FileQUtils {
         } else null
     }
 
+    private fun getFileName(context: Context, uri: Uri, filename10IsTemp: Boolean = true): String {
+        var fileName: String? = null
+        val contentResolver = context.contentResolver
+        if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+            val cursor = contentResolver.query(uri, null, null, null, null)
+            cursor.use { cursor ->
+                if (cursor != null && cursor.moveToFirst()) {
+                    fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                }
+            }
+        }
+        if (fileName == null) {
+            fileName = uri.lastPathSegment
+        }
+        if (!filename10IsTemp && fileName !=null) {
+            fileName = System.currentTimeMillis().toString() + fileName
+        }
+        return fileName ?: "${uri.toString().md5}.${
+            MimeTypeMap.getSingleton()
+                .getExtensionFromMimeType(contentResolver.getType(uri))
+        }"
+    }
+
+
     /**
      * Take file permission
      * 获取长时间的文件读取权限
      * @param uri
      */
-    fun takeFilePermission(context: Context,uri:Uri){
+    fun takeFilePermission(context: Context, uri: Uri) {
         val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
         context.contentResolver.takePersistableUriPermission(uri, flag)
     }

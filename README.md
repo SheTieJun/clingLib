@@ -9,6 +9,8 @@
 1. 基础投屏功能
 2. 本地资源投屏
 
+本项目主要是为自己的业务实现，如果有需要请自行修改，不提供解决方案
+
 ### 注意事项
 
 ```groovy
@@ -88,7 +90,7 @@ control.getMediaInfo(callback)
 control.getTransportInfo(callback)
 ```
 
-#### 5. 本地资源投屏
+#### 5. 本地资源投屏，投屏期间不可关闭服务【请自行选择是否开启多进程服务】
 1. 启动本地服务器
 ```Kotlin
     ClingDLNAManager.startLocalFileService(this)
