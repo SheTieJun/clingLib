@@ -80,17 +80,21 @@ control.pause(callback)
 control.stop(callback)
 control.seek(millSeconds, callback)
 control.next(callback)
-control.canNext(callback) {
-control.callback?.onSuccess(false)
+control.canNext(callback) 
 control.previous(callback)
-control.canPrevious(callback) {
-control.callback?.onSuccess(false)
+control.canPrevious(callback) 
 control.getPositionInfo(callback)
 control.getMediaInfo(callback)
 control.getTransportInfo(callback)
 ```
 
 #### 5. 本地资源投屏，投屏期间不可关闭服务【请自行选择是否开启多进程服务】
+
+> **原理：
+> 利用`jetty`和`servlet-api`构建手机本地的服务器，又因为DLNA投屏需要再同一个局域网中间，所以电视是可以访问到的手机的资源【App要具有对应的权限】。
+> 因此投屏期间不可关闭服务，否则会导致投屏失败**
+
+
 1. 启动本地服务器
 ```Kotlin
     ClingDLNAManager.startLocalFileService(this)
