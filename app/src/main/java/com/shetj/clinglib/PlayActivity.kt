@@ -8,6 +8,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.shetj.clinglib.databinding.ActivityPlayBinding
 import me.shetj.base.base.AbBindingActivity
+import me.shetj.base.ktx.logI
 import me.shetj.base.ktx.start
 
 /**
@@ -31,6 +32,7 @@ class PlayActivity:AbBindingActivity<ActivityPlayBinding>() {
         super.onInitialized()
         intent.getStringExtra("url")?.let {
             mBinding.tvMsg.text= "当前播放链接：$it"
+            "当前播放链接：$it".logI("PlayActivity")
             val mediaSource = DefaultMediaSourceFactory(this)
                 .createMediaSource(MediaItem.fromUri(it))
             val player = ExoPlayer.Builder(this).build()

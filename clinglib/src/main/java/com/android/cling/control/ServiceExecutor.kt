@@ -2,8 +2,7 @@ package com.android.cling.control
 
 import android.os.Handler
 import android.os.Looper
-import com.android.cast.dlna.dmc.control.CastSubscriptionCallback
-import com.android.cast.dlna.dmc.control.action.SetNextAVTransportURI
+import com.android.cling.control.action.SetNextAVTransportURI
 import com.android.cling.entity.ClingPlayType
 import com.android.cling.util.ClingUtils.pushMediaToRender
 import org.fourthline.cling.controlpoint.ActionCallback

@@ -65,6 +65,7 @@ internal object Utils {
         return !(list != null && list.isNotEmpty())
     }
 
+    @Suppress("DEPRECATION")
     fun getWiFiIpAddress(context: Context): String {
         var ipAddress = 0
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -85,7 +86,37 @@ internal object Utils {
     }
 
     fun getBaseUrl(context: Context): String {
-        return "http://"+getWiFiIpAddress(context)+":"+PORT_LISTEN_DEFAULT+"/$HTTP_SERVLET_KEY/"
+        return "http://" + getWiFiIpAddress(context) + ":" + PORT_LISTEN_DEFAULT + "/$HTTP_SERVLET_KEY/"
+    }
+
+
+    private var mMediaContentTypes: Hashtable<String, String> = Hashtable<String, String>().apply {
+        put("png", "image/png")
+        put("jpg", "image/jpeg")
+        put("mp4", "video/mp4")
+        put("mov", "video/quicktime")
+        put("wmv", "video/x-ms-wmv")
+        put("m3u8", "application/x-mpegURL")
+        put("mp3", "audio/mpeg")
+        put("m4a", "audio/m4a")
+        put("wav", "audio/wav")
+        put("aac", "audio/aac")
+        put("key", "application/octet-stream")
+    }
+
+    internal fun getContentType(path: String): String {
+        val type = tryGetContentType(path)
+        return type ?: "application/octet-stream"
+    }
+
+    private fun tryGetContentType(path: String): String? {
+        val index = path.lastIndexOf(".")
+        if (index != -1) {
+            val e = path.substring(index + 1)
+            val ct: String? = mMediaContentTypes[e.lowercase()]
+            if (ct != null) return ct
+        }
+        return null
     }
 }
 

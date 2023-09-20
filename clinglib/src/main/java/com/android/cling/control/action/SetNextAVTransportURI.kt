@@ -1,4 +1,4 @@
-package com.android.cast.dlna.dmc.control.action
+package com.android.cling.control.action
 
 import org.fourthline.cling.controlpoint.ActionCallback
 import org.fourthline.cling.model.action.ActionInvocation

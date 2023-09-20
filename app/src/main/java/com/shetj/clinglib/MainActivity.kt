@@ -36,10 +36,6 @@ import org.fourthline.cling.model.meta.Device
 class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
     private lateinit var mAdapter: DeviceAdapter
     private var control: DeviceControl ?=null
-
-    //播放、停止相关控制
-
-
     private var mUpnpServiceConnection: ServiceConnection? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -238,7 +234,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, BaseViewModel>() {
     }
 
 
-    //没有执行~~~~~~~~~~~ 有问题
     override fun onDestroy() {
         ClingDLNAManager.stopLocalFileService(this)
         stopUpnpService(mUpnpServiceConnection)
