@@ -65,6 +65,11 @@ class LocalFileService : Service() {
                 val file = File(filePath)
                 if (file.exists() && file.isFile) {
                     response.contentType = getContentType(filePath)
+
+                    //fix 如果是下载文件，需要设置ContentLength,因为我用的jetty版本降低，response.setContentLengthLong()不支持
+                    response.setContentLength(file.length().toInt())
+                    response.setHeader("Content-Disposition", "attachment; filename=\"" + file.name + "\"")
+
                     FileInputStream(file).use { fileInputStream ->
                         response.outputStream.use { outputStream ->
                             val buffer = ByteArray(64000)
