@@ -13,7 +13,7 @@ import java.util.*
 internal object Utils {
 
 
-    const val PORT_LISTEN_DEFAULT = 5050
+    var POST_LISTEN_DEFAULT = 5050
     const val HTTP_SERVLET_KEY = "clingLocaleFile"
 
     @JvmStatic
@@ -86,7 +86,7 @@ internal object Utils {
     }
 
     fun getBaseUrl(context: Context): String {
-        return "http://" + getWiFiIpAddress(context) + ":" + PORT_LISTEN_DEFAULT + "/$HTTP_SERVLET_KEY/"
+        return "http://" + getWiFiIpAddress(context) + ":" + POST_LISTEN_DEFAULT + "/$HTTP_SERVLET_KEY/"
     }
 
 

@@ -4,9 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import androidx.arch.core.executor.ArchTaskExecutor
 import com.android.cling.util.Utils.HTTP_SERVLET_KEY
-import com.android.cling.util.Utils.PORT_LISTEN_DEFAULT
+import com.android.cling.util.Utils.POST_LISTEN_DEFAULT
 import com.android.cling.util.Utils.getContentType
 import java.io.File
 import java.io.FileInputStream
@@ -26,7 +27,8 @@ import org.eclipse.jetty.servlet.ServletHolder
  */
 class LocalFileService : Service() {
 
-    private val server = Server(PORT_LISTEN_DEFAULT)
+    private var server = Server(POST_LISTEN_DEFAULT)
+    private var timeReCreate = 0
 
     override fun onCreate() {
         super.onCreate()
@@ -36,14 +38,29 @@ class LocalFileService : Service() {
     @SuppressLint("RestrictedApi")
     private fun createServer() {
         ArchTaskExecutor.getIOThreadExecutor().execute {
-            val contextHandler = ServletContextHandler(ServletContextHandler.SESSIONS)
-            contextHandler.contextPath = "/"
-            server.handler = contextHandler
-            // http://localhost:8080/clingLocaleFile/xxx.txt
-            contextHandler.addServlet(ServletHolder(FileServlet()), "/$HTTP_SERVLET_KEY/*")
-            server.start()
-            server.join()
+            try {
+                server = Server(POST_LISTEN_DEFAULT)
+                startServer()
+            }catch (e:Exception){
+                timeReCreate++
+                if (timeReCreate>10){
+                    e.printStackTrace()
+                    return@execute
+                }
+                POST_LISTEN_DEFAULT += 1
+                createServer()
+                return@execute
+            }
         }
+    }
+
+    private fun startServer() {
+        val contextHandler = ServletContextHandler(ServletContextHandler.SESSIONS)
+        contextHandler.contextPath = "/"
+        server.handler = contextHandler
+        contextHandler.addServlet(ServletHolder(FileServlet()), "/$HTTP_SERVLET_KEY/*")
+        server.start()
+        server.join()
     }
 
 

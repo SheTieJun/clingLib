@@ -43,6 +43,7 @@ allprojects {
 - 投屏成功没有播放：【有些电视不会自动播放】：调用`setAVTransportURI`投屏后还要调用掉一次play才能播放 
 - 构建本地服务器只能是http: 需要修改`network_security_config.xml`中的`<base-config cleartextTrafficPermitted="true">`
 - 暂时不支持`Referer`，项目有代码尝试，但是没有测试，暂时没有条件测试，如果有需要，可以自行测试,然后告诉我结论
+- 创建本地服务端口被占用，已经`try`住，会自动加一重新创建，最多重复10次，如果还是不行，就会创建本地服务失败
 
 ### 使用方法
 
