@@ -2,11 +2,11 @@ package com.android.cling.entity
 
 import com.android.cling.ClingDLNAManager
 import org.fourthline.cling.model.meta.Device
+import java.util.concurrent.CopyOnWriteArrayList
 
 internal object ClingDeviceList   {
 
-    private var mClingDeviceList: MutableList<ClingDevice> = mutableListOf()
-
+    private var mClingDeviceList: CopyOnWriteArrayList<ClingDevice> = CopyOnWriteArrayList()
 
 
     fun removeDevice(device: ClingDevice?) {
@@ -36,11 +36,6 @@ internal object ClingDeviceList   {
         return mClingDeviceList
     }
 
-    fun setClingDeviceList(clingDeviceList: MutableList<ClingDevice>?) {
-        clingDeviceList?.let {
-            mClingDeviceList = clingDeviceList
-        }
-    }
 
     fun clear(){
         mClingDeviceList.clear()
